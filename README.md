@@ -12,8 +12,8 @@
          img_release = surface.load(image)
            img_press = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
                     local cr = cairo.Context(img_press)
----        cr:set_source_surface(img_release, 0, 0.5)
-+++        cr:set_source_surface(img_release, 2, 2)
+---        cr:set_source_surface(img_release, 2, 2)
++++        cr:set_source_surface(img_release, 0, 0.5)
            cr:paint()
                     orig_set_image(self, img_release)
        end
