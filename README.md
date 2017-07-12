@@ -1,5 +1,7 @@
 ## X230 + Archlinux + AwesomeWM 配置文件
 
+我的配置和主题文件，目的是避免以后万一系统需要重装麻烦
+
 * 60G SSD 单 BtrFS 格式分区 + LUKS 全盘加密
 * 自写 AwesomeWM 4.1 主题（网络显示依赖 NetworkManager, 声音调节依赖 pulseaudio 且不支持蓝牙），截图在最后
 
@@ -36,4 +38,11 @@
             #title
             curses.init_pair(4, 219, curses.COLOR_BLACK)
 ```
+
+也可能有配置遗漏...
+
+![screenshot0](screenshot0.png)
+
+![screenshot1](screenshot1.png)
+
 
