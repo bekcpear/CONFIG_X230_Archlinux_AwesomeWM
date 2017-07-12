@@ -8,14 +8,12 @@
   * 文件 `/usr/share/awesome/lib/awful/widget/button.lua` 下有一个修改
 
 ```diff
---- 1.lua       2017-07-10 18:45:52.880066562 +0800
-+++ 2.lua       2017-07-10 18:46:35.580067346 +0800
 @@ -40,7 +40,7 @@
          img_release = surface.load(image)
            img_press = img_release:create_similar(cairo.Content.COLOR_ALPHA, img_release.width, img_release.height)
                     local cr = cairo.Context(img_press)
-  -        cr:set_source_surface(img_release, 0, 0.5)
-  +        cr:set_source_surface(img_release, 2, 2)
+---        cr:set_source_surface(img_release, 0, 0.5)
++++        cr:set_source_surface(img_release, 2, 2)
            cr:paint()
                     orig_set_image(self, img_release)
        end
