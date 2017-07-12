@@ -1,0 +1,290 @@
+!fonts
+Xft.dpi: 96
+!xterm*font: -*-fixed-medium-r-*-*-18-*-*-*-*-*-iso8859-*
+!xterm*boldFont: -*-fixed-medium-r-*-*-18-*-*-*-*-*-iso8859-*
+!xterm*font1: -*-*-*-*-*-*-2-*-*-*-*-*-*-*
+!xterm*font2: -misc-fixed-*-r-normal-*-8-*-*-*-*-*-iso8859-*
+!xterm*font3: -b&h-lucidatypewriter-bold-*-*-*-12-*-*-*-*-*-*-*
+!xterm*font4: -*-screen-bold-r-normal-*-16-*-*-*-*-*-iso8859-*
+!xterm*font5: -*-lucidatypewriter-medium-*-*-*-18-*-*-*-*-*-*-*
+!xterm*font6: -*-lucidatypewriter-medium-*-*-*-20-*-*-*-*-*-*-*
+!xterm*font7: -dec-terminal-normal-r-normal-*-14-*-*-*-*-*-iso8859-*
+!xterm*faceName:Consolas:antialias=True:pixelsize=16 Liberation mono
+!xterm*faceName:Dejavu Sans Mono:antialias=True:pixelsize=14
+xterm*faceName:DejaVu Sans Mono for Powerline:antialias=True:pixelsize=14
+!xterm*faceName:Source Code Pro for Powerline:antialias=True:pixelsize=15
+xterm*faceNameDoublesize:Noto Sans Mono CJK SC Regular:style=regular:antialias=True:pixelsize=13
+!xterm*faceNameDoublesize:PMingLiU\-ExtB:style=regular:antialias=True:pixelsize=15
+
+
+XTerm*metaSendsEscape: true
+XTerm*eightBitInput: false
+
+!??
+XTerm*internalBorder: 0
+XTerm*loginShell: true
+XTerm*scrollBar: false
+XTerm*scrollKey: true
+
+!color
+XTerm*termName: xterm-256color
+!scrolling cache
+Xterm*saveLines: 10000
+!primary&clipboard
+XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+!XTerm*VT100.geometry: 175x50+526+400
+
+! Molokai theme
+!*xterm*background: #101010
+!*xterm*foreground: #efefef
+!!*xterm*cursorColor: #000000
+!*xterm*color0: #101010
+!*xterm*color1: #960050
+!*xterm*color2: #66aa11
+!*xterm*color3: #c47f2c
+!*xterm*color4: #30309b
+!*xterm*color5: #7e40a5
+!*xterm*color6: #3579a8
+!*xterm*color7: #9999aa
+!*xterm*color8: #303030
+!*xterm*color9: #ff0090
+!*xterm*color10: #20dd10
+!*xterm*color11: #ffba68
+!*xterm*color12: #5f5fee
+!*xterm*color13: #bb88dd
+!*xterm*color14: #4eb4fa
+!*xterm*color15: #d0d0d0
+
+*emacs*font:Monospace 12
+
+! --- ~/.Xresources ------------------------------------------------------------
+! ------------------------------------------------------------------------------
+! --- generated with 4bit Terminal Color Scheme Designer -----------------------
+! ------------------------------------------------------------------------------
+! --- http://ciembor.github.com/4bit -------------------------------------------
+! ------------------------------------------------------------------------------
+!
+
+! --- standard colors ---
+
+! --- standard colors ---
+
+! black
+*color0: #000000
+
+! bright_black
+*color8: #343434
+
+! red
+!*color1: #bc8776
+
+! bright_red
+!*color9: #dec3ba
+
+! green
+!*color2: #76bc87
+
+! bright_green
+!*color10: #badec3
+
+! red
+*color1: #b66d80
+!*color1: #c04b56
+!
+! ! bright_red
+*color9: #cd7079
+!
+! ! green
+!*color2: #56c04b
+*color2: #79cd70
+
+! ! bright_green
+*color10: #80b66d
+!*color10: #79cd70
+
+! red
+!*color1: #b66d80
+
+! bright_red
+!*color9: #dfbfc8
+
+! green
+!*color2: #80b66d
+
+! bright_green
+!*color10: #c8dfbf
+
+! yellow
+*color3: #b6a26d
+
+! bright_yellow
+*color11: #dfd7bf
+
+! blue
+*color4: #6d80b6
+
+! bright_blue
+*color12: #bfc8df
+
+! magenta
+*color5: #a26db6
+
+! bright_magenta
+*color13: #d7bfdf
+
+! cyan
+*color6: #6db6a2
+
+! bright_cyan
+*color14: #bfdfd7
+
+! white
+*color7: #e8e8e8
+
+! bright_white
+*color15: #ffffff
+
+! --- special colors ---
+!
+*background: #1c1c1c
+*foreground: #efefef
+
+! *background: #131720
+! *foreground: #dcdcdc
+! !
+! ! --- standard colors ---
+! !
+! ! black
+! *color0: #000000
+! !
+! ! bright_black
+! *color8: #3d3d3d
+! !
+! ! red
+! *color1: #ae8257
+! !
+! ! bright_red
+! *color9: #d7c1ac
+! !
+! ! green
+! *color2: #57ae82
+! !
+! ! bright_green
+! *color10: #acd7c1
+! !
+! ! yellow
+! *color3: #82ae57
+! !
+! ! bright_yellow
+! *color11: #c1d7ac
+! !
+! ! blue
+! *color4: #8257ae
+! !
+! ! bright_blue
+! *color12: #c1acd7
+! !
+! ! magenta
+! *color5: #ae5782
+! !
+! ! bright_magenta
+! *color13: #d7acc1
+! !
+! ! cyan
+! *color6: #5782ae
+! !
+! ! bright_cyan
+! *color14: #acc1d7
+! !
+! ! white
+! *color7: #dcdcdc
+! !
+! ! bright_white
+! *color15: #ffffff
+!
+!
+! ------------------------------------------------------------------------------
+! --- end of terminal colors section -------------------------------------------
+! ------------------------------------------------------------------------------
+
+
+!!!!Scheme 0 Start ----------- https://wiki.mpich.org/mpich/index.php/Configure_xterm_Fonts_and_Colors_for_Your_Eyeball
+!!BLK Cursor
+!#define _color0        #000d18
+!#define _color8        #000d18
+!!RED Tag
+!#define _color1        #e89393
+!#define _color9        #e89393
+!!GRN SpecialKey
+!#define _color2        #9ece9e
+!#define _color10       #9ece9e
+!!YEL Keyword
+!#define _color3        #f0dfaf
+!#define _color11       #f0dfaf
+!!BLU Number
+!#define _color4        #8cd0d3
+!#define _color12       #8cd0d3
+!!MAG Precondit
+!#define _color5        #c0bed1
+!#define _color13       #c0bed1
+!!CYN Float
+!#define _color6        #dfaf8f
+!#define _color14       #dfaf8f
+!!WHT Search
+!#define _color7        #efefef
+!#define _color15       #efefef
+!!FMT Include, StatusLine, ErrorMsg
+#define _colorBD       #ffcfaf
+#define _colorUL       #ccdc90
+#define _colorIT       #80d4aa
+!!TXT Normal, Normal, Cursor
+!#define _foreground    #dcdccc
+!#define _background    #1f1f1f
+#define _cursorColor   #ffefff
+!URxvt*color0         : _color0
+!URxvt*color1         : _color1
+!URxvt*color2         : _color2
+!URxvt*color3         : _color3
+!URxvt*color4         : _color4
+!URxvt*color5         : _color5
+!URxvt*color6         : _color6
+!URxvt*color7         : _color7
+!URxvt*color8         : _color8
+!URxvt*color9         : _color9
+!URxvt*color10        : _color10
+!URxvt*color11        : _color11
+!URxvt*color12        : _color12
+!URxvt*color13        : _color13
+!URxvt*color14        : _color14
+!URxvt*color15        : _color15
+URxvt*colorBD        : _colorBD
+URxvt*colorIT        : _colorIT
+URxvt*colorUL        : _colorUL
+!URxvt*foreground     : _foreground
+!URxvt*background     : _background
+!URxvt*cursorColor    : _cursorColor
+!XTerm*color0         : _color0
+!XTerm*color1         : _color1
+!XTerm*color2         : _color2
+!XTerm*color3         : _color3
+!XTerm*color4         : _color4
+!XTerm*color5         : _color5
+!XTerm*color6         : _color6
+!XTerm*color7         : _color7
+!XTerm*color8         : _color8
+!XTerm*color9         : _color9
+!XTerm*color10        : _color10
+!XTerm*color11        : _color11
+!XTerm*color12        : _color12
+!XTerm*color13        : _color13
+!XTerm*color14        : _color14
+!XTerm*color15        : _color15
+XTerm*colorBD        : _colorBD
+XTerm*colorIT        : _colorIT
+XTerm*colorUL        : _colorUL
+!XTerm*foreground     : _foreground
+!XTerm*background     : _background
+XTerm*cursorColor    : _cursorColor
+!!!!Scheme 0 E n d -----------
+
+

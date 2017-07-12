@@ -1,0 +1,12 @@
+[Unit]
+Description=Lock screen with i3lock before suspend
+Before=sleep.target
+
+[Service]
+User=%I
+Type=forking
+ExecStart=/usr/bin/bash -c 'for i in $(seq 0 4); do export DISPLAY=":$i"; [ 0 -eq $(/usr/bin/ps -e | grep i3lock | wc -l) ] && /usr/bin/i3lock -c002b36 -e || break; [ $? -eq 0 ] && break; done'
+ExecStartPost=/usr/bin/sleep 0.5
+
+[Install]
+WantedBy=sleep.target

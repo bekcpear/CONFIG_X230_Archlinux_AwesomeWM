@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=NetEase MusicBox
+Comment=NetEase MusicBox
+Exec=/opt/bin/musicbox.sh
+Categories=AudioVideo;Player;

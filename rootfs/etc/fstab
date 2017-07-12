@@ -1,0 +1,16 @@
+# 
+# /etc/fstab: static file system information
+#
+# <file system>	<dir>	<type>	<options>	<dump>	<pass>
+# /dev/mapper/dcroot
+UUID=49066eaf-400e-4072-a148-5b5815bded6b	/         	btrfs     	defaults,noatime,ssd,discard,subvolid=257,subvol=@	0 1
+
+# /dev/mapper/dcroot
+UUID=49066eaf-400e-4072-a148-5b5815bded6b	/home     	btrfs     	defaults,noatime,ssd,discard,subvolid=258,subvol=@home	0 2
+
+# /dev/mapper/dcroot
+UUID=49066eaf-400e-4072-a148-5b5815bded6b	/.sss     	btrfs     	defaults,noatime,ssd,discard,subvolid=263,subvol=@snapshots	0 2
+
+# /dev/sda1
+UUID=4E9A-5BE6      	/boot/efi 	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro	0 2
+

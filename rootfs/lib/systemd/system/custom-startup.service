@@ -1,0 +1,11 @@
+[Unit]
+Description=Custom startup script
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/loadkeys /.cc.map
+
+[Install]
+WantedBy=multi-user.target
