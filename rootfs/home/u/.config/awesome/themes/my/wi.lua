@@ -703,4 +703,52 @@ mywi.separator_empty  = wibox.widget {
 }
 -- Separator }}}
 
+-- {{{ Loop to change wallpaper randomly Start
+if beautiful.wallpaper_dir ~= nil then
+  local wall_a      = {}
+  local wall_errs   = ''
+  local wall_exco   = 0
+  local wall_reas   = ''
+  local wall_index  = 0
+  local wall_lindex = 0
+  local wall_path   = ''
+  local wall_func   = function()
+    wall_a          = {}
+    wall_errs       = ''
+    awful.spawn.with_line_callback(string.format("/usr/bin/bash -c 'ls -1 %s | egrep \"\\.(png|jpg|jpeg)$\"'", beautiful.wallpaper_dir), {
+      stdout = function(stdout)
+        table.insert(wall_a, stdout)
+      end,
+      stderr = function(stderr)
+        wall_errs   = wall_errs .. '\n' .. tostring(stderr)
+      end,
+      output_done = function()
+        if wall_exco ~= 0 then
+          naughty.notify({title = "Random wallpaper err.", text = string.format("[%d] %s: %s", wall_exco, wall_reas, wall_errs), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
+        elseif #wall_a > 0 then
+          wall_index      = math.random(1, #wall_a)
+          while wall_lindex == wall_index do
+            wall_index    = math.random(1, #wall_a)
+          end
+          wall_lindex     = wall_index
+          if string.match(beautiful.wallpaper_dir, '(/)$') == nil then
+            wall_path     = beautiful.wallpaper_dir .. '/' .. wall_a[wall_index]
+          else
+            wall_path     = beautiful.wallpaper_dir .. wall_a[wall_index]
+          end
+          gears.wallpaper.maximized(wall_path)
+        end
+      end,
+      exit = function(reason, exit_code)
+        wall_exco   = exit_code
+        wall_reas   = reason
+      end,
+    })
+  end
+
+  local wall_timer  = gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() wall_func() end})
+  wall_timer:emit_signal('timeout')
+end
+-- Loop to change wallpaper randomly End }}}
+
 return mywi

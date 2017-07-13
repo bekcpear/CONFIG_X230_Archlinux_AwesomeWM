@@ -552,6 +552,7 @@ awful.rules.rules = {
         },
         class = {
           "Gimp-2.8",
+          "Code",
           "Arandr",
           "Gpick",
           "Kruler",
@@ -577,7 +578,7 @@ awful.rules.rules = {
 
     -- Set to always map on the tag named "So".
     { rule = { class = "Telegram" },
-      properties = { tag = "So" } },
+      properties = { tag = "So", maximized = true } },
 
     -- Set terminal xterm & sakura to transparent
     { rule_any = {

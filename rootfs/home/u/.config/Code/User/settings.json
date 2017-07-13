@@ -1,0 +1,12 @@
+{
+  "editor.tabSize": 2,
+  "editor.fontFamily": "'DejaVu Sans Mono', 'Noto Sans Mono CJK TC', monospace, 'Droid Sans Fallback'",
+  "editor.cursorStyle": "line",
+  "editor.cursorBlinking": "solid",
+  "editor.autoClosingBrackets": false,
+  "workbench.colorTheme": "Visual Studio Light",
+  "python.pythonPath": "python3",
+  "[restructuredtext]":  {
+    "editor.wordWrap": "on"
+  }
+}

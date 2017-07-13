@@ -8,6 +8,8 @@ local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/my"
 
 theme.wallpaper                                 = theme.dir .. "/wall.png"
+theme.wallpaper_dir                             = theme.dir .. "/wall_dir"
+theme.wallpaper_switch_time                     = 600 -- seconds
 theme.font                                      = "DejaVu Sans Mono 8"
 
 theme.fg_normal                                 = "#bdbdbd"
