@@ -704,18 +704,33 @@ mywi.separator_empty  = wibox.widget {
 -- Separator }}}
 
 -- {{{ Loop to change wallpaper randomly Start
-if beautiful.wallpaper_dir ~= nil then
+if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and beautiful.wallpaper_dir_night ~= nil) then
   local wall_a      = {}
   local wall_errs   = ''
   local wall_exco   = 0
   local wall_reas   = ''
   local wall_index  = 0
   local wall_lindex = 0
+  local wall_lindey = 0
+  local wall_dir    = ''
   local wall_path   = ''
+  local wall_hour   = 0
+
+  math.randomseed(os.time())
   local wall_func   = function()
     wall_a          = {}
     wall_errs       = ''
-    awful.spawn.with_line_callback(string.format("/usr/bin/bash -c 'ls -1 %s | egrep \"\\.(png|jpg|jpeg)$\"'", beautiful.wallpaper_dir), {
+    if beautiful.wallpaper_day_h_s ~= nil and beautiful.wallpaper_night_h_s ~= nil and beautiful.wallpaper_dir_day ~= nil and beautiful.wallpaper_dir_night ~= nil then
+      wall_hour     = os.date('*t')['hour']
+      if  wall_hour >= beautiful.wallpaper_day_h_s and wall_hour < beautiful.wallpaper_night_h_s then
+        wall_dir    = beautiful.wallpaper_dir_day
+      elseif  wall_hour < beautiful.wallpaper_day_h_s or wall_hour >= beautiful.wallpaper_night_h_s then
+        wall_dir    = beautiful.wallpaper_dir_night
+      end
+    else
+      wall_dir      = beautiful.wallpaper_dir
+    end
+    awful.spawn.with_line_callback(string.format("/usr/bin/bash -c 'ls -1 %s | egrep \"\\.(png|jpg|jpeg)$\"'", wall_dir), {
       stdout = function(stdout)
         table.insert(wall_a, stdout)
       end,
@@ -726,15 +741,26 @@ if beautiful.wallpaper_dir ~= nil then
         if wall_exco ~= 0 then
           naughty.notify({title = "Random wallpaper err.", text = string.format("[%d] %s: %s", wall_exco, wall_reas, wall_errs), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
         elseif #wall_a > 0 then
-          wall_index      = math.random(1, #wall_a)
-          while wall_lindex == wall_index do
-            wall_index    = math.random(1, #wall_a)
-          end
-          wall_lindex     = wall_index
-          if string.match(beautiful.wallpaper_dir, '(/)$') == nil then
-            wall_path     = beautiful.wallpaper_dir .. '/' .. wall_a[wall_index]
+          if #wall_a == 1 then
+            wall_index      = 1
+          elseif #wall_a == 2 then
+            if wall_index == 1 then
+              wall_index    = 2
+            else
+              wall_index    = 1
+            end
           else
-            wall_path     = beautiful.wallpaper_dir .. wall_a[wall_index]
+            wall_index      = math.random(#wall_a)
+            while wall_lindex == wall_index or wall_lindey == wall_index do
+              wall_index    = math.random(#wall_a)
+            end
+            wall_lindey     = wall_lindex
+            wall_lindex     = wall_index
+          end
+          if string.match(wall_dir, '(/)$') == nil then
+            wall_path     = wall_dir .. '/' .. wall_a[wall_index]
+          else
+            wall_path     = wall_dir .. wall_a[wall_index]
           end
           gears.wallpaper.maximized(wall_path)
         end
