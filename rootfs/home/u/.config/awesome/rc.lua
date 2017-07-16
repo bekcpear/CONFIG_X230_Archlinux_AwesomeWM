@@ -178,9 +178,10 @@ local function set_wallpaper(s)
         local wallpaper = beautiful.wallpaper
         -- If wallpaper is a function, call it with the screen
         if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
+            wallpaper(s)
+        else
+            gears.wallpaper.maximized(wallpaper, s, true)
         end
-        gears.wallpaper.maximized(wallpaper, s, true)
     end
 end
 
@@ -252,6 +253,8 @@ powerlauncher = awful.widget.launcher({
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     set_wallpaper(s)
+    -- Loop to re-set wallpaper
+    gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() set_wallpaper(s) end})
 
     -- Each screen has its own tag table.
     awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Su", "Des", "Des.", "Des..", "So", "10", "11" }, s, awful.layout.layouts[1])
@@ -424,6 +427,8 @@ globalkeys = gears.table.join(
     awful.key({}, "XF86MonBrightnessDown", function() mywi.showBrightness(-1) end,
               {description = "Decrease brightness", group = "Device"}),
     -- Volume
+    awful.key({}, "Print", function() mywi.s_easy_async('/usr/bin/gnome-screenshot') end,
+              {description = "Capture whole screen", group = "Media"}),
     awful.key({}, "XF86AudioMicMute", function() mywi.micmutetoggle() end,
               {description = "Toggle MIC mute", group = "Media"}),
     awful.key({}, "XF86AudioRaiseVolume", function() mywi.sliderbar.value = mywi.sliderbar.value + 5 end,
@@ -553,6 +558,7 @@ awful.rules.rules = {
         class = {
           "Gimp-2.8",
           "Code",
+          "netease-cloud-music",
           "Arandr",
           "Gpick",
           "Kruler",
@@ -580,15 +586,24 @@ awful.rules.rules = {
     { rule = { class = "Telegram" },
       properties = { tag = "So", maximized = true } },
 
-    -- Set terminal xterm & sakura to transparent
+    -- Set transparent
     { rule_any = {
         class = {
           "XTerm",
-          "Sakura"
+          "Sakura",
         }
       },
       properties = {
         opacity = 0.85
+      }
+    },
+    { rule_any = {
+        class = {
+          "netease-cloud-music",
+        }
+      },
+      properties = {
+        opacity = 0.75
       }
     },
 }

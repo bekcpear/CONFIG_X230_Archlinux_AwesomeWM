@@ -6,6 +6,7 @@ After=multi-user.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/loadkeys /.cc.map
+ExecStart=/usr/bin/razerd -B
 
 [Install]
 WantedBy=multi-user.target

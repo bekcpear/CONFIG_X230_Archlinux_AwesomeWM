@@ -5,8 +5,9 @@
   "editor.cursorBlinking": "solid",
   "editor.autoClosingBrackets": false,
   "workbench.colorTheme": "Visual Studio Light",
-  "python.pythonPath": "python3",
+  "editor.minimap.enabled": false,
   "[restructuredtext]":  {
+    "editor.parameterHints": false,
     "editor.wordWrap": "on"
   }
 }

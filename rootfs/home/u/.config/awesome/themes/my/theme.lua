@@ -9,7 +9,7 @@ theme.dir                                       = os.getenv("HOME") .. "/.config
 
 theme.wallpaper                                 = theme.dir .. "/wall.png"
 theme.wallpaper_dir                             = theme.dir .. "/wall_dir"
-theme.wallpaper_switch_time                     = 1200 --  seconds
+theme.wallpaper_switch_time                     = 1200 -- seconds
 
 -- {{{ comment below to disable day/night wallpapers
 theme.wallpaper_dir_day                         = theme.dir .. "/wall_dir_day"
@@ -31,7 +31,7 @@ theme.bg_urgent                                 = "#ef5350"
 theme.bg_green                                  = "#66bb6a"
 
 theme.graph_0                                   = "#78a4ff"
-theme.graph_1                                   = "#ff7878"
+theme.graph_1                                   = "#ec407a"
 
 theme.tooltip_fg                                = theme.fg_focus
 theme.tooltip_bg                                = theme.bg_normal

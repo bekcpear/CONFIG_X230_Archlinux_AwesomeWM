@@ -90,7 +90,7 @@ mywi.sliderbar:connect_signal("widget::redraw_needed", function(w)
     mywi.s_easy_async("/opt/bin/volume-control.sh mut 0")
   end
   naughty.destroy(naughty.getById(mywi.sliderbar.notify_id))
-  mywi.sliderbar.notify_id = naughty.notify({text = "Vol: " .. tostring(w.value) .. "% " .. muted, timeout = 1}).id
+  mywi.sliderbar.notify_id = naughty.notify({text = "Vol: " .. tostring(w.value) .. "% " .. muted, timeout = 1, position = 'bottom_middle'}).id
   vol_timer:start()
   return true
 end)
@@ -381,7 +381,7 @@ net_timer:connect_signal("timeout", function()
     if now_rx >= 0 and now_tx >= 0 and last_rx > 0 and last_tx > 0  then
       up            = (now_tx - last_tx) / 2048
       dw            = (now_rx - last_rx) / 2048
-      if up > 1024 or dw > 1024 then
+      if up >= 1000 or dw >= 1000 then
         nettxt_up.text = string.format("%.1f", up / 1024)
         nettxt_do.text = string.format("%.1f", dw / 1024)
         nettxt_unit.text = 'mBps'
@@ -667,7 +667,7 @@ mywi.showBrightness = function(act)
   elseif brightness < 0 then
     brightness                = 0
   end
-  mywi.showbrightness_notify_id = naughty.notify({text = string.format("Brightness: %d", brightness), timeout = 2, position = 'bottom_middle'}).id
+  mywi.showbrightness_notify_id = naughty.notify({text = string.format("Brightness: %d", brightness), timeout = 1, position = 'bottom_middle'}).id
 end
 -- Show brightness End }}}
 
@@ -703,23 +703,32 @@ mywi.separator_empty  = wibox.widget {
 }
 -- Separator }}}
 
--- {{{ Loop to change wallpaper randomly Start
+-- {{{ Get wallpaper randomly Start
 if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and beautiful.wallpaper_dir_night ~= nil) then
   local wall_a      = {}
   local wall_errs   = ''
   local wall_exco   = 0
   local wall_reas   = ''
   local wall_index  = 0
-  local wall_lindex = 0
-  local wall_lindey = 0
+  local wall_lindex = {}
+  local wall_lindey = {}
+  local wall_lscr   = {}
+  local wall_lscr_i = 0
+  local wall_lscr_f = false
   local wall_dir    = ''
   local wall_path   = ''
   local wall_hour   = 0
 
   math.randomseed(os.time())
-  local wall_func   = function()
+  beautiful.wallpaper = function(s)
+    if s == nil then
+      naughty.notify({title = "Random wallpaper err.", text = 'nil screen', timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
+      return nil
+    end
+
     wall_a          = {}
     wall_errs       = ''
+
     if beautiful.wallpaper_day_h_s ~= nil and beautiful.wallpaper_night_h_s ~= nil and beautiful.wallpaper_dir_day ~= nil and beautiful.wallpaper_dir_night ~= nil then
       wall_hour     = os.date('*t')['hour']
       if  wall_hour >= beautiful.wallpaper_day_h_s and wall_hour < beautiful.wallpaper_night_h_s then
@@ -741,6 +750,18 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
         if wall_exco ~= 0 then
           naughty.notify({title = "Random wallpaper err.", text = string.format("[%d] %s: %s", wall_exco, wall_reas, wall_errs), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
         elseif #wall_a > 0 then
+          for i = 1, #wall_lscr, 1 do
+            if wall_lscr[i] == s then
+              wall_lscr_i = i
+              wall_lscr_f = true
+            end
+          end
+          if not wall_lscr_f then
+            table.insert(wall_lscr, s)
+            wall_lscr_i   = #wall_lscr
+          end
+          wall_lscr_f     = false
+
           if #wall_a == 1 then
             wall_index      = 1
           elseif #wall_a == 2 then
@@ -751,18 +772,18 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
             end
           else
             wall_index      = math.random(#wall_a)
-            while wall_lindex == wall_index or wall_lindey == wall_index do
+            while wall_lindex[wall_lscr_i] == wall_index or wall_lindey[wall_lscr_i] == wall_index do
               wall_index    = math.random(#wall_a)
             end
-            wall_lindey     = wall_lindex
-            wall_lindex     = wall_index
+            wall_lindey[wall_lscr_i] = wall_lindex[wall_lscr_i]
+            wall_lindex[wall_lscr_i] = wall_index
           end
           if string.match(wall_dir, '(/)$') == nil then
             wall_path     = wall_dir .. '/' .. wall_a[wall_index]
           else
             wall_path     = wall_dir .. wall_a[wall_index]
           end
-          gears.wallpaper.maximized(wall_path)
+          gears.wallpaper.maximized(wall_path, s)
         end
       end,
       exit = function(reason, exit_code)
@@ -771,10 +792,7 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
       end,
     })
   end
-
-  local wall_timer  = gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() wall_func() end})
-  wall_timer:emit_signal('timeout')
 end
--- Loop to change wallpaper randomly End }}}
+-- Get wallpaper randomly End }}}
 
 return mywi
