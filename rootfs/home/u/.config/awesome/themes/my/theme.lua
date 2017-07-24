@@ -60,9 +60,9 @@ theme.titlebar_bg_focus                         = theme.bg_focus
 
 theme.border_normal                             = theme.titlebar_bg_normal
 theme.border_focus                              = theme.bg_focus
-theme.border_width                              = 1
+theme.border_width                              = 0
 
-theme.useless_gap                               = 0
+theme.useless_gap                               = 8
 
 theme.awesome_icon                              = theme.dir .."/icons/awesome.png"
 theme.dropdown_icon                             = theme.dir .."/icons/dropdown_icon.png"

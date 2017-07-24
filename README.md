@@ -34,7 +34,7 @@
 
 * 无 display manager, tty 下通过 shell 判断是否 startx
 * 利用 systemd 服务实现睡眠前如果未锁屏则自动锁屏后睡眠
-* Xterm 作为主 terminal, 透明已经在 awesome 下配置，需要启动 xcompmgr 以实现
+* Xterm 作为主 terminal, 透明已经在 awesome 下配置，<s>需要启动 xcompmgr 以实现</s> 替换成了 compton 以实现窗口阴影/过渡，几个部件透明等效果
 * zsh 作为默认 shell
 * tlp 来管理电源（需要 mask 掉 systemd-rfkill.service 和 systemd-rfkill.socket）
 * fcitx 下自定义了一个未激活时的 icon，默认可以 `cp _mis/fcitx_inactive.png /usr/share/fcitx/skin/classic/inactive.png`
@@ -57,4 +57,5 @@
 
 ![screenshot1](screenshot1.png)
 
+![screenshot2](screenshot2.png)
 

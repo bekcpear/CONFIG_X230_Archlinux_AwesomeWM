@@ -8,7 +8,8 @@ export SDL_IM_MODULE=fcitx
 
 xrdb -merge .Xresources
 
-xcompmgr &
+#xcompmgr &
+compton -b
 fcitx &
 redshift -t 5500K:4500K &
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud &

@@ -51,6 +51,7 @@ fcp /home/u/.config/awesome
 fcp /home/u/.config/fcitx/rime/default.yaml
 fcp /home/u/.config/Code/User/settings.json
 fcp /home/u/.config/sakura
+fcp /home/u/.config/compton.conf
 fcp /home/u/.vimrc
 fcp /home/u/.Xresources
 fcp /home/u/.xinitrc

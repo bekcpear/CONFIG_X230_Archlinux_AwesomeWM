@@ -559,6 +559,7 @@ awful.rules.rules = {
           "Gimp-2.8",
           "Code",
           "netease-cloud-music",
+          "TeamViewer",
           "Arandr",
           "Gpick",
           "Kruler",
@@ -584,7 +585,7 @@ awful.rules.rules = {
 
     -- Set to always map on the tag named "So".
     { rule = { class = "Telegram" },
-      properties = { tag = "So", maximized = true } },
+      properties = { tag = "So", maximized = false, floating = true } },
 
     -- Set transparent
     { rule_any = {
@@ -621,7 +622,7 @@ client.connect_signal("manage", function (c)
     -- set Sakura terminal (running musicbox) geometry
     if c.name == "Netease Music Box" and c.class == "Sakura" then
       c.floating = true
-      c:geometry({x = 0, y = 120, width = 1366, height = 500})
+      c:geometry({x = 16, y = math.abs((c.screen.geometry['height'] - 540) / 2), width = c.screen.geometry['width'] - 32, height = 500})
     end
 
     if awesome.startup and

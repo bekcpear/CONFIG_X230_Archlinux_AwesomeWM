@@ -482,13 +482,15 @@ local hour              = 0
 local min               = 0
 local left_time         = 0
 bat_timer1:connect_signal("timeout", function()
-  bat_uevent            = file_read('/sys/class/power_supply/BAT0/uevent', true, true)
+  bat_uevent            = tostring(file_read('/sys/class/power_supply/BAT0/uevent', false, true))
   bat_s                 = string.match(bat_uevent, 'POWER_SUPPLY_STATUS=(%a+)')
   bat_v                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_NOW=(%d+)'))
   bat_vm                = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_MIN_DESIGN=(%d+)'))
   bat_p                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_POWER_NOW=(%d+)'))
   bat_f                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_ENERGY_FULL=(%d+)'))
   bat_n                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_ENERGY_NOW=(%d+)'))
+  if bat_f == nil then bat_f = 1 end
+  if bat_n == nil then bat_n = 0 end
   bat_perc              = bat_n / bat_f * 100
 
   bat_progress.value    = bat_perc / 100
@@ -557,6 +559,8 @@ bat_timer1:connect_signal("timeout", function()
       end
     elseif bat_s == 'Full' then
       bat_text          = bat_text .. 'full charged)'
+    elseif bat_s == nil then
+      bat_text          = bat_text .. 'no battery)'
     else
       bat_text          = bat_text .. 'discharging, ' .. string.format("%.1f%%)", bat_perc)
     end
