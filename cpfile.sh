@@ -62,4 +62,11 @@ fcp /root/.vimrc
 fcp /root/.zshrc
 fcp /lib/systemd/system/custom-startup.service
 fcp /lib/systemd/system/i3lock@.service
+fcp /lib/systemd/system/myresuming@.service
+fcp /lib/systemd/system/openconnect@.service
+fcp /lib/systemd/system/net-checker@.service
+<<<<<<< HEAD
+fcp /lib/systemd/system/nmcontrol.service
+=======
+>>>>>>> 1b7b65618d30a631905d47b23646dcec56a19aed
 fcp /home/u/.local/share/applications/netease-musicbox.desktop

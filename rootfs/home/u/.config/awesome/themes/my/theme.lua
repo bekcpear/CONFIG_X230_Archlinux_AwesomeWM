@@ -15,7 +15,7 @@ theme.wallpaper_switch_time                     = 1200 -- seconds
 theme.wallpaper_dir_day                         = theme.dir .. "/wall_dir_day"
 theme.wallpaper_dir_night                       = theme.dir .. "/wall_dir_night"
 theme.wallpaper_day_h_s                         = 7   --  daytime start hour for wallpaper
-theme.wallpaper_night_h_s                       = 18  --  night start hour for wallpaper
+theme.wallpaper_night_h_s                       = 17  --  night start hour for wallpaper
 -- }}}
 
 theme.font                                      = "DejaVu Sans Mono 8"
@@ -52,6 +52,8 @@ theme.taglist_fg_focus                          = theme.fg_focus
 theme.taglist_fg_normal                         = theme.fg_normal
 theme.taglist_bg_focus                          = "#111111"
 theme.taglist_bg_normal                         = "#111111"
+
+theme.tooltip_bg                                = theme.taglist_bg_normal
 
 theme.titlebar_fg_normal                        = theme.tasklist_fg_minimize
 theme.titlebar_fg_focus                         = theme.tasklist_fg_minimize

@@ -1,0 +1,12 @@
+[Unit]
+Description=Connect to an openconnect server
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/home/u/.ss-conf.d/%i.occonfig
+ExecStart=/usr/bin/openconnect -c $certificate -p $keypassword $ocserver
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

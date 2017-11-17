@@ -21,8 +21,8 @@ function xterm_title_preexec () {
 add-zsh-hook -Uz precmd xterm_title_precmd
 add-zsh-hook -Uz preexec xterm_title_preexec
 
-PROMPT="%B%F{11}%~%f %F{239}>%f%F{248}>%f> %b"
-RPROMPT="%(?..%F{9}%? %f)%F{238}%*%f"
+PROMPT=" %B%F{11}%~%f %(?.%F{239}>%f%F{248}>%f>.%F{124}>%f%F{160}>%f%F{196}>%f) %b"
+RPROMPT="%(?..%F{196}%? %f)%F{238}%*%f"
 
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /home/u/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh

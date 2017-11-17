@@ -120,14 +120,31 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock   = wibox.widget.textclock("%H:%M")
-mytextclock_t = awful.tooltip({
-                  objects = {mytextclock},
-                  delay_show = 1,
-                  timer_function = function()
-                                       return os.date("Today is %A - %B %d, %Y\nThe time is %T")
-                                   end,
-                })
+font_tmp         = beautiful.font
+beautiful.font   = "DejaVu Sans Mono 10"
+mytextclock_time = wibox.widget.textclock("%H:%M")
+beautiful.font   = "DejaVu Sans Mono 6"
+mytextclock_day  = wibox.widget.textclock("%d")
+mytextclock_week = wibox.widget.textclock("%a")
+beautiful.font   = font_tmp
+mytextclock_date = wibox.widget {
+  wibox.container.margin(mytextclock_day, 0, 0, 2, 10),
+  wibox.container.margin(mytextclock_week, 0, 0, 10.5, 3),
+  layout  = wibox.layout.stack
+}
+mytextclock      = wibox.widget {
+  mytextclock_time,
+  mywi.separator_empty,
+  mytextclock_date,
+  layout = wibox.layout.fixed.horizontal
+}
+awful.tooltip({
+  objects = {mytextclock},
+  delay_show = 1,
+  timer_function = function()
+    return os.date("Today is %A - %B %d, %Y\nThe time is %T")
+  end,
+})
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(

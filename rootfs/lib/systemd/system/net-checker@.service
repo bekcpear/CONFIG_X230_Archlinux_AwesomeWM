@@ -1,0 +1,10 @@
+[Unit]
+Description=Check the network if is connected
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/bin/checknet.sh %i
+
+[Install]
+WantedBy=multi-user.target

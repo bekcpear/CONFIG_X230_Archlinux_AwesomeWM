@@ -291,7 +291,7 @@ local net_timer       = gears.timer({ timeout = 2 })
 local net_timer_init  = true
 function getNetConn(stdout, stderr, reason, exit_code)
   if exit_code == 0 then
-    conn_name, conn_type, interface = string.match(stdout, '([%a%d:_-]+)%s+[%a%d-]+%s+%d+-%d+-(%a+)%s+([%l%d]+)')
+    conn_name, conn_type, interface = string.match(stdout, '([%a%d:_]+)%s+[%a%d-]+%s+(%a+)%s+([%l%d]+)')
     if net_timer_init then
       net_timer_init = false
       net_timer:start()
@@ -330,14 +330,14 @@ net_timer:connect_signal("timeout", function()
     netwidget_t.text      = tostring(conn_name) .. ' (' .. tostring(conn_type) .. ', ' .. tostring(interface) .. ')'
   end
   vul                     = file_read("/sys/class/net/" .. tostring(interface) .. "/carrier", false)
-  if vul == false or tonumber(vul) ~= 1 then 
+  if vul == false or tonumber(vul) ~= 1 or (conn_type ~= 'wifi' and conn_type ~='ethernet') then 
     netimage:set_image(beautiful.net_off_ico)
     netwidget_t.text      = 'Offline'
     last_conn_type        = ''
     awful.spawn.easy_async(getCmd, getNetConn)
     return false
   else
-    if conn_type == 'wireless' then
+    if conn_type == 'wifi' then
       if last_conn_type ~= conn_type then
         last_conn_type    = conn_type
         netimage:set_image(beautiful.net_wl_ico)
@@ -482,6 +482,8 @@ local hour              = 0
 local min               = 0
 local left_time         = 0
 bat_timer1:connect_signal("timeout", function()
+  min_unit              = ' minutes'
+  hour_unit             = ' hours '
   bat_uevent            = tostring(file_read('/sys/class/power_supply/BAT0/uevent', false, true))
   bat_s                 = string.match(bat_uevent, 'POWER_SUPPLY_STATUS=(%a+)')
   bat_v                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_NOW=(%d+)'))

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run nmcontrol.py
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python2 /opt/Github/nmcontrol/nmcontrol.py --daemon=0 start
+
+[Install]
+WantedBy=multi-user.target
