@@ -13,11 +13,6 @@ xrdb -merge .Xresources
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud &
 fcitx &
 redshift -t 5500K:4500K &
-<<<<<<< HEAD
-=======
-
-sleep 5 && compton -b &
->>>>>>> 1b7b65618d30a631905d47b23646dcec56a19aed
 
 sleep 5 && compton -b &
 

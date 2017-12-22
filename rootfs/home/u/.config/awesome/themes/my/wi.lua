@@ -636,7 +636,7 @@ local fans        = 0
 local temp_flag   = 0
 temp_timer:connect_signal('timeout', function()
   temper          = tonumber(file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon0/temp1_input'))
-  fans            = tonumber(file_read('/sys/bus/platform/devices/thinkpad_hwmon/fan1_input'))
+  fans            = tonumber(file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon2/fan1_input'))
   tempgraph_t:set_text(string.format("%.1f °C (%d rpm)", temper / 1000, fans))
   temp_graph_prog_c.value = temper / 1000
   if temper >= 87000 and temp_flag ~= 1 then
