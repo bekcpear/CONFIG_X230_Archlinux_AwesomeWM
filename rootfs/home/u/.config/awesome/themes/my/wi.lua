@@ -632,11 +632,23 @@ local tempgraph_t = awful.tooltip({
 -- loop to check temperature
 local temp_timer  = gears.timer({timeout = 10})
 local temper      = 0
+local hwmon_num   = 1
+local fans_c      = ''
 local fans        = 0
 local temp_flag   = 0
 temp_timer:connect_signal('timeout', function()
   temper          = tonumber(file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon0/temp1_input'))
-  fans            = tonumber(file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon2/fan1_input'))
+  fans_c          = ''
+  hwmon_num       = 1
+  while fans_c == '' or fans_c == false do
+    fans_c        = file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon' .. hwmon_num .. '/fan1_input', false)
+    hwmon_num     = hwmon_num + 1
+    if hwmon_num >= 10 then
+      naughty.notify({title = "Get fan speed error", text = 'Too many tries, assign fan speed variable to \'-1\'.', timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
+      fans_c      = '-1'
+    end
+  end
+  fans            = tonumber(fans_c)
   tempgraph_t:set_text(string.format("%.1f °C (%d rpm)", temper / 1000, fans))
   temp_graph_prog_c.value = temper / 1000
   if temper >= 87000 and temp_flag ~= 1 then
