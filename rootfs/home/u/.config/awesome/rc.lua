@@ -573,10 +573,12 @@ awful.rules.rules = {
           "copyq",  -- Includes session name in class.
         },
         class = {
-          "Gimp-2.8",
+          "Gimp",
           "Code",
           "netease-cloud-music",
           "TeamViewer",
+          "Teamviewer",
+          "bitcoin-qt",
           "Arandr",
           "Gpick",
           "Kruler",

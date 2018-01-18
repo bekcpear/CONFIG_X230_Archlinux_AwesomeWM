@@ -11,6 +11,10 @@ UUID=49066eaf-400e-4072-a148-5b5815bded6b	/home     	btrfs     	defaults,noatime
 # /dev/mapper/dcroot
 UUID=49066eaf-400e-4072-a148-5b5815bded6b	/.sss     	btrfs     	defaults,noatime,ssd,discard,subvolid=263,subvol=@snapshots	0 2
 
-# /dev/sda1
+# /dev/sdb1
 UUID=4E9A-5BE6      	/boot/efi 	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro	0 2
 
+tmpfs /var/cache/polipo tmpfs rw,size=512M,noexec,nodev,nosuid,noatime 0 0
+
+# /dev/sda1
+UUID=86d2c5c6-e2d4-4e7a-98b7-8e077c1c01c1 /datavol ext4 defaults,discard,noatime 0 2

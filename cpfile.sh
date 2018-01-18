@@ -48,6 +48,7 @@ fcp /etc/udev/rules.d
 fcp /etc/X11/xorg.conf.d
 fcp /etc/razer.conf
 fcp /home/u/.config/awesome
+fcp /home/u/.config/fcitx/skin
 fcp /home/u/.config/fcitx/rime/default.yaml
 fcp /home/u/.config/Code/User/settings.json
 fcp /home/u/.config/sakura

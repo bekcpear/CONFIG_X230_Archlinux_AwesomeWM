@@ -8,6 +8,11 @@
   "editor.minimap.enabled": false,
   "[restructuredtext]":  {
     "editor.parameterHints": false,
+    "editor.quickSuggestions": {
+      "other": false,
+      "comments": false,
+      "strings": false
+    },
     "editor.wordWrap": "on"
   }
 }

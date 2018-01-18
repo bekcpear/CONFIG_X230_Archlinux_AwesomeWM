@@ -11,7 +11,9 @@ xrdb -merge .Xresources
 #xcompmgr &
 
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud &
+/usr/bin/bitcoin-qt &
 fcitx &
+quiterss &
 redshift -t 5500K:4500K &
 
 sleep 5 && compton -b &
