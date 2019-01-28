@@ -5,6 +5,7 @@ After=suspend.target
 [Service]
 User=%I
 Type=oneshot
+#do not enable this line, use the `-detectsleep` option of xautolock instead
 ExecStart=/usr/bin/bash -c 'for i in $(seq 0 4); do export DISPLAY=":$i"; /usr/bin/xautolock -enable && break || true; done'
 
 [Install]

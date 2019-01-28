@@ -9,7 +9,8 @@ theme.dir                                       = os.getenv("HOME") .. "/.config
 
 theme.wallpaper                                 = theme.dir .. "/wall.png"
 theme.wallpaper_dir                             = theme.dir .. "/wall_dir"
-theme.wallpaper_switch_time                     = 1200 -- seconds
+theme.wallpaper_switch_time                     = 1800 -- seconds
+theme.wallpaper_fade                            = true
 
 -- {{{ comment below to disable day/night wallpapers
 theme.wallpaper_dir_day                         = theme.dir .. "/wall_dir_day"
@@ -73,6 +74,7 @@ theme.suspend_icon                              = theme.dir .."/icons/suspend_ic
 theme.power_off_icon                            = theme.dir .."/icons/power_off_icon.png"
 theme.lock_icon                                 = theme.dir .."/icons/lock_icon.png"
 theme.exit_icon                                 = theme.dir .."/icons/exit_icon.png"
+theme.warn_icon                                 = theme.dir .."/icons/warnning.png"
 
 theme.taglist_squares_sel                       = theme.dir .. "/icons/square_unsel.png"
 theme.taglist_squares_unsel                     = theme.dir .. "/icons/square_unsel.png"
@@ -86,6 +88,9 @@ theme.bat_graph_charging_black_ico              = theme.dir .. "/icons/power_bla
 theme.bat_graph_head_normal                     = theme.dir .. "/icons/power_head_normal.png"
 theme.bat_graph_head_low                        = theme.dir .. "/icons/power_head_low.png"
 theme.bat_graph_head_charging                   = theme.dir .. "/icons/power_head_charging.png"
+
+theme.power_notify_ac_ico                       = theme.dir .. "/icons/power_notify_ac_icon.png"
+theme.power_notify_dc_ico                       = theme.dir .. "/icons/power_notify_dc_icon.png"
 
 theme.vol_ico                                   = theme.dir .. "/icons/vol.png"
 theme.vol_low_ico                               = theme.dir .. "/icons/vol_low.png"

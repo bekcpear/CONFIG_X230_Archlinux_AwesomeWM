@@ -13,7 +13,7 @@ Xft.dpi: 96
 !xterm*faceName:Dejavu Sans Mono:antialias=True:pixelsize=14
 xterm*faceName:DejaVu Sans Mono for Powerline:antialias=True:pixelsize=14
 !xterm*faceName:Source Code Pro for Powerline:antialias=True:pixelsize=15
-xterm*faceNameDoublesize:Noto Sans Mono CJK SC Regular:style=regular:antialias=True:pixelsize=13
+xterm*faceNameDoublesize:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=13
 !xterm*faceNameDoublesize:PMingLiU\-ExtB:style=regular:antialias=True:pixelsize=15
 
 
@@ -28,6 +28,7 @@ XTerm*scrollKey: true
 
 !color
 XTerm*termName: xterm-256color
+URxvt*termName: xterm-256color
 !scrolling cache
 Xterm*saveLines: 10000
 !primary&clipboard
@@ -63,9 +64,11 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 ! ------------------------------------------------------------------------------
 ! --- http://ciembor.github.com/4bit -------------------------------------------
 ! ------------------------------------------------------------------------------
-!
 
-! --- standard colors ---
+! --- special colors ---
+
+*background: #000000
+*foreground: #ffffff
 
 ! --- standard colors ---
 
@@ -73,81 +76,148 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 *color0: #000000
 
 ! bright_black
-*color8: #343434
+*color8: #464646
 
 ! red
-!*color1: #bc8776
+*color1: #d14a40
 
 ! bright_red
-!*color9: #dec3ba
+*color9: #eaaba7
 
 ! green
-!*color2: #76bc87
+*color2: #40d14a
 
 ! bright_green
-!*color10: #badec3
-
-! red
-*color1: #b66d80
-!*color1: #c04b56
-!
-! ! bright_red
-*color9: #cd7079
-!
-! ! green
-!*color2: #56c04b
-*color2: #79cd70
-
-! ! bright_green
-*color10: #80b66d
-!*color10: #79cd70
-
-! red
-!*color1: #b66d80
-
-! bright_red
-!*color9: #dfbfc8
-
-! green
-!*color2: #80b66d
-
-! bright_green
-!*color10: #c8dfbf
+*color10: #a7eaab
 
 ! yellow
-*color3: #b6a26d
+*color3: #c7d140
 
 ! bright_yellow
-*color11: #dfd7bf
+*color11: #e5eaa7
 
 ! blue
-*color4: #6d80b6
+*color4: #4a40d1
 
 ! bright_blue
-*color12: #bfc8df
+*color12: #aba7ea
 
 ! magenta
-*color5: #a26db6
+*color5: #d140c7
 
 ! bright_magenta
-*color13: #d7bfdf
+*color13: #eaa7e5
 
 ! cyan
-*color6: #6db6a2
+*color6: #40c7d1
 
 ! bright_cyan
-*color14: #bfdfd7
+*color14: #a7e5ea
 
 ! white
-*color7: #e8e8e8
+*color7: #d9d9d9
 
 ! bright_white
 *color15: #ffffff
 
-! --- special colors ---
+
+! ------------------------------------------------------------------------------
+! --- end of terminal colors section -------------------------------------------
+! ------------------------------------------------------------------------------
+
+
+
+! --- ~/.Xresources ------------------------------------------------------------
+! ------------------------------------------------------------------------------
+! --- generated with 4bit Terminal Color Scheme Designer -----------------------
+! ------------------------------------------------------------------------------
+! --- http://ciembor.github.com/4bit -------------------------------------------
+! ------------------------------------------------------------------------------
 !
-*background: #1c1c1c
-*foreground: #efefef
+
+! --- standard colors ---
+
+! --- standard colors ---
+
+! black
+!*color0: #000000
+!
+!! bright_black
+!*color8: #343434
+!
+!! red
+!!*color1: #bc8776
+!
+!! bright_red
+!!*color9: #dec3ba
+!
+!! green
+!!*color2: #76bc87
+!
+!! bright_green
+!!*color10: #badec3
+!
+!! red
+!*color1: #b66d80
+!!*color1: #c04b56
+!!
+!! ! bright_red
+!*color9: #cd7079
+!!
+!! ! green
+!!*color2: #56c04b
+!*color2: #79cd70
+!
+!! ! bright_green
+!*color10: #80b66d
+!!*color10: #79cd70
+!
+!! red
+!!*color1: #b66d80
+!
+!! bright_red
+!!*color9: #dfbfc8
+!
+!! green
+!!*color2: #80b66d
+!
+!! bright_green
+!!*color10: #c8dfbf
+!
+!! yellow
+!*color3: #b6a26d
+!
+!! bright_yellow
+!*color11: #dfd7bf
+!
+!! blue
+!*color4: #6d80b6
+!
+!! bright_blue
+!*color12: #bfc8df
+!
+!! magenta
+!*color5: #a26db6
+!
+!! bright_magenta
+!*color13: #d7bfdf
+!
+!! cyan
+!*color6: #6db6a2
+!
+!! bright_cyan
+!*color14: #bfdfd7
+!
+!! white
+!*color7: #e8e8e8
+!
+!! bright_white
+!*color15: #ffffff
+!
+!! --- special colors ---
+!!
+!*background: #1c1c1c
+!*foreground: #efefef
 
 ! *background: #131720
 ! *foreground: #dcdcdc
@@ -285,6 +355,28 @@ XTerm*colorUL        : _colorUL
 !XTerm*foreground     : _foreground
 !XTerm*background     : _background
 XTerm*cursorColor    : _cursorColor
+URxvt*cursorColor    : _cursorColor
+URxvt*cursorColor2   : #abcdef
 !!!!Scheme 0 E n d -----------
 
+!URxvt*font: xft:DejaVu Sans Mono for Powerline:antialias=True:pixelsize=14,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=14
+URxvt*font: xft:Source Code Pro for Powerline:antialias=True:pixelsize=13,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=13
+URxvt*depth: 32
+URxvt*background: rgba:0000/0000/0000/e000
+!URxvt*transparent: true
+!URxvt*tintColor: #000000
+!URxvt*shading: 30
+URxvt*scrollBar: false
+! do not scroll with output
+URxvt*scrollTtyOutput: false
 
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+
+URxvt.perl-ext-common: selection-to-clipboard

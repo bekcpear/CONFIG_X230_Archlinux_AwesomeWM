@@ -7,8 +7,9 @@ local awful     = require("awful")
 local wibox     = require("wibox")
 local naughty   = require("naughty")
 local beautiful = require("beautiful")
-local smoothwp  = require("themes.my.smoothwp")
-local root      = root
+local surface   = require("gears.surface")
+local cairo     = require("lgi").cairo
+local timer     = require("gears.timer")
 
 local mywi      = {}
 
@@ -338,7 +339,7 @@ net_timer:connect_signal("timeout", function()
   vul                     = file_read("/sys/class/net/" .. tostring(interface) .. "/carrier", false)
   if vul == false or tonumber(vul) ~= 1 or (conn_type ~= 'wifi' and conn_type ~='ethernet') then 
     netimage:set_image(beautiful.net_off_ico)
-    netwidget_t.text      = 'offline'
+    netwidget_t.text      = 'Offline'
     last_conn_type        = ''
     awful.spawn.easy_async(getCmd, getNetConn)
     return false
@@ -491,14 +492,9 @@ local hour              = 0
 local min               = 0
 local left_time         = 0
 local lowbatnum         = 0
-local show_bat_status   = false
-local power_status_ico  = ''
-local power_status_title= ''
-local power_status_text = ''
 bat_timer1:connect_signal("timeout", function()
   min_unit              = ' minutes'
   hour_unit             = ' hours '
-  power_status_text     = ''
   bat_uevent            = tostring(file_read('/sys/class/power_supply/BAT0/uevent', false, true))
   bat_s                 = string.match(bat_uevent, 'POWER_SUPPLY_STATUS=(%a+)')
   bat_v                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_NOW=(%d+)'))
@@ -546,9 +542,7 @@ bat_timer1:connect_signal("timeout", function()
   end
 
   if ac_online == '1' then
-    bat_text            = 'AC online ('
-    power_status_title  = 'AC'
-    power_status_ico    = beautiful.power_notify_ac_ico
+    bat_text            = 'AC Online ('
     if bat_s == 'Charging' then
       bat_text          = bat_text .. 'charging, ' .. string.format("%.1f%%, ", bat_perc)
       if bat_vm > 10000000 and bat_vm < 12000000 and bat_v >= 12870000 then
@@ -584,13 +578,11 @@ bat_timer1:connect_signal("timeout", function()
       bat_text          = bat_text .. 'discharging, ' .. string.format("%.1f%%)", bat_perc)
     end
   elseif ac_online == '0' then
-    bat_text            = 'AC offline (' .. string.format("%.1f%%, %.1fW", bat_perc, bat_p / 1000000)
-    power_status_title  = 'BAT (' .. string.format("%.1f%%, %.1fW", bat_perc, bat_p / 1000000) .. ')'
-    power_status_ico    = beautiful.power_notify_dc_ico
+    bat_text            = 'AC Offline (' .. string.format("%.1f%%, %.1fW, approx. ", bat_perc, bat_p / 1000000)
     left_time           = bat_n / bat_p
     if left_time >= 1 then
       hour              = math.ceil(left_time)
-      min               = math.ceil(left_time % 1 * 60)
+       min              = math.ceil(left_time % 1 * 60)
       if min ~= 0 then
         hour            = hour - 1
       end
@@ -600,40 +592,28 @@ bat_timer1:connect_signal("timeout", function()
       if min == 1 then
         min_unit        = ' minute'
       end
-      power_status_text = "Approximately " .. tostring(hour) .. hour_unit .. tostring(min) .. min_unit .. ' left. '
-      bat_text          = bat_text .. ", approx. " .. tostring(hour) .. hour_unit .. tostring(min) .. min_unit .. ' left)'
+      bat_text          = bat_text .. tostring(hour) .. hour_unit .. tostring(min) .. min_unit .. ' left)'
     else
-      hour              = 0
       min               = math.ceil(left_time * 60)
       if min == 1 then
         min_unit        = ' minute'
       end
-      power_status_text = "Approximately " .. tostring(min) .. min_unit .. ' left. '
-      bat_text          = bat_text .. ", approx. " .. tostring(min) .. min_unit .. ' left)'
+      bat_text          = bat_text .. tostring(min) .. min_unit .. ' left)'
     end
     if bat_perc <= 20 then
       lowbatnum = lowbatnum + 1
       if lowbatnum == 1 and naughty.getById(mywi.batpbar.notify_id) == nil then
-          mywi.batpbar.notify_id = naughty.notify({title = "Low battery warnning!", text = "init", timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent, position = 'top_right', icon = beautiful.warn_icon, icon_size = 24, margin = 3}).id
+          mywi.batpbar.notify_id = naughty.notify({title = "Low battery warnning!", text = "init", timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent}).id
       elseif lowbatnum == 30 then
         lowbatnum = 0
       end
       if naughty.getById(mywi.batpbar.notify_id) ~= nil then
-        local leftstr = tostring(min) .. min_unit
-        if hour > 0 then
-          leftstr = tostring(hour) .. hour_unit .. tostring(min) .. min_unit
-        end
-        naughty.replace_text(naughty.getById(mywi.batpbar.notify_id), "Low battery warnning!", string.format("%.1f%% only, approx. %s left.", bat_perc, leftstr))
+        naughty.replace_text(naughty.getById(mywi.batpbar.notify_id), "Low battery warnning!", string.format("%.1f%% only, approx. %s left.", bat_perc, tostring(min) .. min_unit))
       end
     end
   end
   batpbar_t.text        = bat_text
-  if show_bat_status then
-    mywi.batpbar.inter_notify_id = naughty.notify({title = "Power status - " .. power_status_title, text = power_status_text == '' and bat_text or power_status_text, timeout = 0, position = 'top_middle', icon = power_status_ico, icon_size = 24, margin = 3}).id
-    show_bat_status     = false
-  elseif naughty.getById(mywi.batpbar.inter_notify_id) ~= nil then
-    naughty.replace_text(naughty.getById(mywi.batpbar.inter_notify_id), "Power status - " .. power_status_title, power_status_text == '' and bat_text or power_status_text)
-  end
+  --naughty.notify({title = "Test", text = bat_s, timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent})
 end)
 if bat_timer_init == false then
   bat_timer_init        = true
@@ -641,14 +621,6 @@ if bat_timer_init == false then
   bat_timer1:emit_signal('timeout')
 end
 
-mywi.showBatStat = function()
-  if naughty.getById(mywi.batpbar.inter_notify_id) == nil then
-    show_bat_status     = true
-    bat_timer1:emit_signal('timeout')
-  else
-    naughty.destroy(naughty.getById(mywi.batpbar.inter_notify_id))
-  end
-end
 -- Battery widget End }}}
 
 --{{{ Temperature widget Start
@@ -687,7 +659,7 @@ local fans_c      = ''
 local fans        = 0
 local temp_flag   = 0
 temp_timer:connect_signal('timeout', function()
-  temper          = tonumber(file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon1/temp1_input'))
+  temper          = tonumber(file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon0/temp1_input'))
   fans_c          = ''
   hwmon_num       = 1
   while fans_c == '' or fans_c == false do
@@ -791,6 +763,42 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
   local wall_path   = ''
   local wall_hour   = 0
 
+  local function mix_surfaces(first, second, factor)
+    local result = surface.duplicate_surface(first)
+    local fi_x, fi_y = surface.get_size(result)
+    local se_x, se_y = surface.get_size(second)
+    local cr = cairo.Context(result)
+    cr:scale(fi_x/se_x, fi_y/se_y)
+    cr:set_source_surface(second, 0, 0)
+    cr:paint_with_alpha(factor)
+    return result
+  end
+
+  -- Get the current wallpaper and do a fade 'steps' times with 'interval'
+  -- seconds between steps. At each step, the wallpapers are mixed and the
+  -- result is given to 'callback'. If no wallpaper is set, the callback
+  -- function is directly called with the new wallpaper.
+  local function fade_to_wallpaper(new_wp, steps, interval, callback)
+    new_wp = surface(new_wp)
+    local old_wp = surface(root.wallpaper())
+    print(string.format("root wallpaper size: %.1f, %.1f", surface.get_size(old_wp)))
+    if not old_wp then
+      callback(new_wp)
+      return
+    end
+    -- Setting a new wallpaper invalidates any surface returned
+    -- by root.wallpaper(), so create a copy.
+    old_wp = surface.duplicate_surface(old_wp)
+    local steps_done = 0
+    timer.start_new(interval, function()
+      steps_done = steps_done + 1
+      local mix = mix_surfaces(old_wp, new_wp, steps_done / steps)
+      callback(mix)
+      mix:finish()
+      return steps_done <= steps
+    end)
+  end
+
   math.randomseed(os.time())
   beautiful.wallpaper = function(s)
     if s == nil then
@@ -855,11 +863,9 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
           else
             wall_path     = wall_dir .. wall_a[wall_index]
           end
-          if beautiful.wallpaper_fade == true then
-            smoothwp.fade(wall_path, s)
-          else
-            gears.wallpaper.maximized(wall_path, s, false)
-          end
+          fade_to_wallpaper(wall_path, 30, 1/30, function(surf)
+            gears.wallpaper.maximized(surf)
+          end)
         end
       end,
       exit = function(reason, exit_code)

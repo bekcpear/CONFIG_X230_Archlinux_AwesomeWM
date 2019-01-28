@@ -5,7 +5,8 @@ After=network.target
 [Service]
 Type=simple
 EnvironmentFile=/home/u/.ss-conf.d/%i.occonfig
-ExecStart=/usr/bin/openconnect -c $certificate -p $keypassword $ocserver
+#ExecStart=/usr/bin/openconnect -c $certificate -p $keypassword $ocserver
+ExecStart=/usr/bin/bash -c 'eval "/usr/bin/openconnect -u $user --passwd-on-stdin $ocserver <<<$passwd"'
 Restart=on-failure
 
 [Install]

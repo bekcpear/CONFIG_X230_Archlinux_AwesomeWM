@@ -47,12 +47,14 @@ fcp /etc/sysctl.d
 fcp /etc/udev/rules.d
 fcp /etc/X11/xorg.conf.d
 fcp /etc/razer.conf
+fcp /etc/iproute2/rt_tables
 fcp /home/u/.config/awesome
 fcp /home/u/.config/fcitx/skin
 fcp /home/u/.config/fcitx/rime/default.yaml
 fcp /home/u/.config/Code/User/settings.json
 fcp /home/u/.config/sakura
 fcp /home/u/.config/compton.conf
+fcp /home/u/.config/kitty/kitty.conf
 fcp /home/u/.vimrc
 fcp /home/u/.Xresources
 fcp /home/u/.xinitrc

@@ -21,9 +21,9 @@ let g:SimpylFold_docstring_preview=1
 
 Plugin 'vim-scripts/indentpython.vim'
 
-Plugin 'Valloric/YouCompleteMe'
-let g:ycm_python_binary_path = '/usr/bin/python3'
-let g:ycm_server_python_interpreter = '/usr/bin/python2'
+"Plugin 'Valloric/YouCompleteMe'
+"let g:ycm_python_binary_path = '/usr/bin/python3'
+"let g:ycm_server_python_interpreter = '/usr/bin/python2'
 
 Plugin 'scrooloose/syntastic'
 Plugin 'nvie/vim-flake8'

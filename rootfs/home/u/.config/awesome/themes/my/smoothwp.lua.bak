@@ -1,0 +1,150 @@
+---------------------------------------------------------------------------
+-- @author Bekcpear, modified from Uli's gears.wallpaper
+-- @module smoothwp
+---------------------------------------------------------------------------
+
+local color     = require("gears.color")
+local cairo     = require("lgi").cairo
+local surface   = require("gears.surface")
+local timer     = require("gears.timer")
+local debug     = require("gears.debug")
+local beautiful = require("beautiful")
+local root      = root
+
+local smoothwp    = { mt = {} }
+local pending_wp  = {}
+
+local function root_geometry()
+    local width, height = root.size()
+    return { x = 0, y = 0, width = width, height = height }
+end
+
+--- Set the current wallpaper.
+-- @param index Screen index, 0 for root
+-- @see gears.color
+local function setwallpaper(index)
+    local paper   = pending_wp[index]
+    local pattern = paper.surface
+
+    if cairo.Surface:is_type_of(pattern) then
+        pattern = cairo.Pattern.create_for_surface(pattern)
+    end
+    if type(pattern) == "string" or type(pattern) == "table" then
+        pattern = color(pattern)
+    end
+    if not cairo.Pattern:is_type_of(pattern) then
+        pending_wp[index] = nil
+        error("wallpaper.set() called with an invalid argument")
+    end
+    root.wallpaper(pattern._native)
+end
+
+--- Prepare the needed state for setting a wallpaper.
+-- This function returns a cairo context through which a wallpaper can be drawn.
+-- The context is only valid for a short time and should not be saved in a
+-- global variable.
+-- @param s The screen to set the wallpaper on or nil for all screens
+-- @return[1] The available geometry (table with entries width and height)
+-- @return[1] A cairo context that the wallpaper should be drawn to
+local function prepare_context(s)
+    local root_width, root_height = root.size()
+    local geom    = s and s.geometry or root_geometry()
+    local sindex  = s and s.index or 0
+    local source, target, cr
+
+    if not pending_wp[sindex] then
+        -- Prepare a pending wallpaper
+        source = surface(root.wallpaper())
+        target = source:create_similar(cairo.Content.COLOR, root_width, root_height)
+
+    elseif geom.width ~= pending_wp[sindex].width or geom.height ~= pending_wp[sindex].height then
+        -- The root window was resized while a wallpaper is pending
+        source = pending_wp[sindex].surface
+        target = source:create_similar(cairo.Content.COLOR, geom.width, geom.height)
+    else
+        -- Draw to the already-pending wallpaper
+        source = nil
+        target = pending_wp[sindex].surface
+    end
+
+    cr = cairo.Context(target)
+
+    if source then
+        -- Copy the old wallpaper to the new one
+        cr:save()
+        cr.operator = cairo.Operator.SOURCE
+        cr:set_source_surface(source, 0, 0)
+        cr:paint()
+        cr:restore()
+    end
+
+    pending_wp[sindex] = {
+        surface = target,
+        width = root_width,
+        height = root_height
+    }
+
+    -- Only draw to the selected area
+    cr:translate(geom.x, geom.y)
+    cr:rectangle(0, 0, geom.width, geom.height)
+    cr:clip()
+
+    return geom, cr
+end
+
+--- Set a maximized wallpaper.
+-- @param surf The wallpaper to set. Either a cairo surface or a file name.
+-- @param s The screen whose wallpaper should be set. Can be nil, in which case
+--   all screens are set.
+local function maximized(surf, s, factor)
+    local geom, cr = prepare_context(s)
+    local original_surf = surf
+    surf = surface.load_uncached(surf)
+    local w, h = surface.get_size(surf)
+    local aspect_w = geom.width / w
+    local aspect_h = geom.height / h
+
+    aspect_h = math.max(aspect_w, aspect_h)
+    aspect_w = math.max(aspect_w, aspect_h)
+    cr:scale(aspect_w, aspect_h)
+
+    local scaled_width = geom.width / aspect_w
+    local scaled_height = geom.height / aspect_h
+    cr:translate((scaled_width - w) / 2, (scaled_height - h) / 2)
+
+    cr.operator = cairo.Operator.SOURCE
+    cr:set_source_surface(surf, 0, 0)
+    cr:paint_with_alpha(factor)
+    if surf ~= original_surf then
+        surf:finish()
+    end
+    if cr.status ~= "SUCCESS" then
+        debug.print_warning("Cairo context entered error state: " .. cr.status)
+    end
+
+    local index = s and s.index or 0
+    setwallpaper(index)
+    pending_wp[index].surface:finish()
+    pending_wp[index] = nil
+end
+
+function smoothwp.fade(surf, s)
+--    local steps       = 30
+--    local steps_done  = 0
+--    local interval    = 1/30
+--    timer.start_new(interval, function()
+--        steps_done = steps_done + 1
+        maximized(surf, s, 1)
+--        return steps_done <= steps
+--    end)
+end
+
+--- Set wallpaper from the directory, beautiful.wall_dir[_day, _night],
+--   randomly.
+-- @param s Screen object
+function smoothwp.random(s)
+end
+
+return smoothwp
+
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

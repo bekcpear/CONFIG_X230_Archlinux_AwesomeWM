@@ -48,7 +48,7 @@ beautiful.init("/home/u/.config/awesome/themes/my/theme.lua")
 local mywi = require("themes.my.wi")
 
 -- This is used later as the default terminal and editor to run.
-terminal    = "xterm"
+terminal    = "urxvt"
 editor      = os.getenv("EDITOR") or "nano"
 editor_cmd  = terminal .. " -e " .. editor
 scrlock     = function() mywi.s_easy_async("i3lock -c002b36 -e") end
@@ -438,6 +438,11 @@ globalkeys = gears.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
+    awful.key({ modkey }, "u", function() mywi.s_easy_async("/usr/bin/rofi -show window") end,
+              {description = "pop up the selector of opening windows", group = "launcher"}),
+    -- Show power status notification
+    awful.key({ modkey }, "b", function() mywi.showBatStat() end,
+              {description = "Toggle power status notification", group = "Device"}),
     -- Show brightness
     awful.key({}, "XF86MonBrightnessUp", function() mywi.showBrightness(1) end,
               {description = "Increase brightness", group = "Device"}),
@@ -604,7 +609,7 @@ awful.rules.rules = {
 
     -- Set to always map on the tag named "So".
     { rule = { class = "Telegram" },
-      properties = { tag = "So", maximized = false, floating = true } },
+      properties = { tag = "So", maximized = false, floating = false } },
 
     -- Set transparent
     { rule_any = {
@@ -740,4 +745,24 @@ client.connect_signal("unfocus", function(c)
   c.border_color  = beautiful.border_normal
 
 end)
+
+-- Autorun programs
+autorun = true
+autorunApps =
+{
+  --"LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud",
+  "nextcloud",
+  "fcitx",
+  "quiterss",
+}
+if autorun then
+  for app = 1, #autorunApps do
+    awful.spawn.easy_async_with_shell(autorunApps[app], function(o, e, er, ec)
+      if ec ~= 0 then
+        naughty.notify({title = "Autostart error", text = autorunApps[app] .. " :: " .. e, timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+      end
+    end)
+  end
+end
+
 -- }}}
