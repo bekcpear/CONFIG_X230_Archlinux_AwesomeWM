@@ -4,6 +4,7 @@
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
+local cairo = require("lgi").cairo
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
@@ -14,7 +15,7 @@ local naughty = require("naughty")
 
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-require("eminent")
+--require("eminent")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -45,13 +46,15 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("/home/u/.config/awesome/themes/my/theme.lua")
 
-local mywi = require("themes.my.wi")
+local mywi  = require("themes.my.wi")
+local myhok = require("themes.my.hok")
+local mytl  = require("themes.my.tl")
 
 -- This is used later as the default terminal and editor to run.
 terminal    = "urxvt"
 editor      = os.getenv("EDITOR") or "nano"
 editor_cmd  = terminal .. " -e " .. editor
-scrlock     = function() mywi.s_easy_async("i3lock -c002b36 -e") end
+scrlock     = function() mytl.s_easy_async("i3lock -c002b36 -e") end
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -140,7 +143,7 @@ mytextclock      = wibox.widget {
 }
 awful.tooltip({
   objects = {mytextclock},
-  delay_show = 1,
+  delay_show = beautiful.ttdelayshowtime,
   timer_function = function()
     return os.date("Today is %A - %B %d, %Y\nThe time is %T")
   end,
@@ -189,13 +192,13 @@ local tasklist_buttons = gears.table.join(
                                               awful.client.focus.byidx(-1)
                                           end))
 
-local function set_wallpaper(s)
+local function set_wallpaper(s, noFade)
     -- Wallpaper
     if beautiful.wallpaper then
         local wallpaper = beautiful.wallpaper
         -- If wallpaper is a function, call it with the screen
         if type(wallpaper) == "function" then
-            wallpaper(s)
+            wallpaper(s, noFade)
         else
             gears.wallpaper.maximized(wallpaper, s, true)
         end
@@ -210,21 +213,21 @@ powermenu = awful.menu({ items = {
                                    {
                                      "Reboot",
                                      function()
-                                       mywi.s_easy_async("systemctl reboot")
+                                       mytl.s_easy_async("systemctl reboot")
                                      end,
                                      beautiful.reboot_icon
                                    },
                                    {
                                      "Suspend",
                                      function()
-                                       mywi.s_easy_async("systemctl suspend")
+                                       mytl.s_easy_async("systemctl suspend")
                                      end,
                                      beautiful.suspend_icon
                                    },
                                    {
                                      "Power off",
                                      function()
-                                       mywi.s_easy_async("systemctl poweroff")
+                                       mytl.s_easy_async("systemctl poweroff")
                                      end,
                                      beautiful.power_off_icon
                                    },
@@ -274,7 +277,7 @@ awful.screen.connect_for_each_screen(function(s)
     gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() set_wallpaper(s) end})
 
     -- Each screen has its own tag table.
-    awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Su", "Des", "Des.", "Des..", "So", "10", "11" }, s, awful.layout.layouts[1])
+    awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Sur", "Def", "Des", "Det", "Soc", "10", "11" }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -287,10 +290,124 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
-
+    s.mytaglist = awful.widget.taglist {
+      screen  = s,
+      filter  = awful.widget.taglist.filter.noempty,
+      buttons = taglist_buttons,
+      widget_template = {
+        {
+          id     = 'background_role',
+          forced_height = 5,
+          wibox.widget.base.make_widget(),
+          widget = wibox.container.background,
+        },
+        {
+          {
+            {
+              {
+                {
+                  id     = 'index_role',
+                  widget = wibox.widget.textbox,
+                },
+                margins = 4,
+                widget  = wibox.container.margin,
+              },
+              bg     = '#333333',
+              shape  = gears.shape.circle,
+              widget = wibox.container.background,
+            },
+            top     = 3,
+            bottom  = 3,
+            visible = false,
+            widget  = wibox.container.margin,
+          },
+          {
+            {
+              id     = 'icon_role',
+              widget = wibox.widget.imagebox,
+            },
+            margins = 0,
+            visible = false,
+            widget  = wibox.container.margin,
+          },
+          {
+            {
+              id     = 'text_role',
+              widget = wibox.widget.textbox,
+            },
+            left    = 7,
+            right   = 7,
+            top     = 2,
+            bottom  = 5,
+            widget  = wibox.container.margin,
+          },
+          layout = wibox.layout.fixed.horizontal,
+        },
+        forced_width = 32,
+        layout = wibox.layout.align.vertical,
+      },
+    }
     -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons)
+    s.mytasklist = awful.widget.tasklist{
+      screen  = s,
+      filter  = awful.widget.tasklist.filter.currenttags,
+      buttons = tasklist_buttons,
+      layout   = {
+        spacing = 3,
+        spacing_widget = {
+          {
+            color         = nil,
+            border_color  = nil,
+            forced_width  = 3,
+            opacity       = 0,
+            shape         = gears.shape.rectangle,
+            widget        = wibox.widget.separator
+          },
+          valign = 'center',
+          halign = 'center',
+          widget = wibox.container.place,
+        },
+        layout  = wibox.layout.flex.horizontal
+      },
+      widget_template = {
+        {
+          {
+            {
+              {
+                id     = 'icon_role',
+                forced_height = 10,
+                widget = wibox.widget.imagebox,
+              },
+              left    = 3,
+              right   = 3,
+              top     = 2,
+              bottom  = 2,
+              widget  = wibox.container.margin,
+            },
+            {
+              {
+                id     = 'text_role',
+                widget = wibox.widget.textbox,
+              },
+              top     = 1,
+              widget  = wibox.container.margin,
+            },
+            forced_height = 16,
+            layout = wibox.layout.fixed.horizontal,
+          },
+          {
+            id     = 'background_role',
+            wibox.widget.base.make_widget(),
+            widget = wibox.container.background,
+          },
+          layout = wibox.layout.align.vertical,
+        },
+        left  = 5,
+        right = 10,
+        bottom = 0,
+        widget = wibox.container.margin
+      },
+    }
 
     -- Create the wibox
     -- s.mywibox = awful.wibar({ position = "top", screen = s, height = 18, bg = beautiful.bg_normal, fg = beautiful.fg_normal })
@@ -314,6 +431,8 @@ awful.screen.connect_for_each_screen(function(s)
             mywi.separator,
             mywi.tempgraph,
             mywi.separator_empty,
+            mywi.cpuubar,
+            mywi.separator_empty,
             mywi.batpbar,
             mywi.separator_empty,
             mywi.netwidget,
@@ -331,10 +450,25 @@ end)
 
 -- {{{ Mouse bindings
 root.buttons(gears.table.join(
+    awful.button({ }, 1, function () mytl.closeUnfocusedPopup() end)
 --    awful.button({ }, 3, function () mymainmenu:toggle() end),
 --    awful.button({ }, 4, awful.tag.viewnext),
 --    awful.button({ }, 5, awful.tag.viewprev)
 ))
+-- }}}
+
+-- {{{
+-- open terminal smartly
+-- make the first terminal of corresponding tag floating and nice placed
+local tagFirTers = {}
+function openTerminal()
+  local ntag = awful.screen.focused().selected_tag
+  if tagFirTers[ntag.index] ~= true then -- for urxvt only
+    mytl.s_easy_async("urxvt -name 'tagFirTer'")
+  else
+    mytl.s_easy_async("urxvt")
+  end
+end
 -- }}}
 
 -- {{{ Key bindings
@@ -360,6 +494,12 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
+    awful.key({ modkey, "Control" }, "j",
+        function ()
+            myhok.ccenter()
+        end,
+        {description = "make focused client center", group = "client"}
+    ),
     awful.key({ modkey,           }, "w", function () powermenu:show() end,
               {description = "show power menu", group = "awesome"}),
     awful.key({ modkey,           }, "i", scrlock,
@@ -370,6 +510,8 @@ globalkeys = gears.table.join(
               {description = "swap with next client by index", group = "client"}),
     awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
               {description = "swap with previous client by index", group = "client"}),
+    awful.key({ modkey,           }, "a", function () set_wallpaper(awful.screen.focused(), true) end,
+              {description = "change the current screen wallpaper randomly", group = "screen"}),
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
               {description = "focus the next screen", group = "screen"}),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
@@ -386,16 +528,22 @@ globalkeys = gears.table.join(
         {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey,           }, "Return", function () openTerminal() end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ modkey,           }, "l",     function ()
+                  awful.tag.incmwfact( 0.05)
+                  myhok.resfloatcli(true)
+                end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ modkey,           }, "h",     function ()
+                  awful.tag.incmwfact(-0.05)
+                  myhok.resfloatcli(false)
+                end,
               {description = "decrease master width factor", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
@@ -438,20 +586,20 @@ globalkeys = gears.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
-    awful.key({ modkey }, "u", function() mywi.s_easy_async("/usr/bin/rofi -show window") end,
+    awful.key({ modkey }, "u", function() mytl.s_easy_async("/usr/bin/rofi -show window") end,
               {description = "pop up the selector of opening windows", group = "launcher"}),
     -- Show power status notification
     awful.key({ modkey }, "b", function() mywi.showBatStat() end,
               {description = "Toggle power status notification", group = "Device"}),
     -- Show brightness
-    awful.key({}, "XF86MonBrightnessUp", function() mywi.showBrightness(1) end,
+    awful.key({}, "XF86MonBrightnessUp", function() myhok.showBrightness(1) end,
               {description = "Increase brightness", group = "Device"}),
-    awful.key({}, "XF86MonBrightnessDown", function() mywi.showBrightness(-1) end,
+    awful.key({}, "XF86MonBrightnessDown", function() myhok.showBrightness(-1) end,
               {description = "Decrease brightness", group = "Device"}),
     -- Volume
-    awful.key({}, "Print", function() mywi.s_easy_async('/usr/bin/gnome-screenshot') end,
+    awful.key({}, "Print", function() mytl.s_easy_async('/usr/bin/gnome-screenshot') end,
               {description = "Capture whole screen", group = "Media"}),
-    awful.key({}, "XF86AudioMicMute", function() mywi.micmutetoggle() end,
+    awful.key({}, "XF86AudioMicMute", function() myhok.micmutetoggle() end,
               {description = "Toggle MIC mute", group = "Media"}),
     awful.key({}, "XF86AudioRaiseVolume", function() mywi.sliderbar.value = mywi.sliderbar.value + 5 end,
               {description = "Increase volume 5%", group = "Media"}),
@@ -595,12 +743,29 @@ awful.rules.rules = {
           "xtightvncviewer"},
         name = {
           "Event Tester",  -- xev.
+--          "tagFirTer", -- first floating terminal
+--          "Netease Music Box",
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
         }
       }, properties = { floating = true }},
+
+    { rule_any = {
+        role = {
+          "GtkFileChooserDialog",
+        }
+      },
+      properties = {
+        floating = true,
+        --x = awful.screen.focused().geometry['x'] + awful.screen.focused().geometry['width'] / 2 - client.focus.width / 2,
+        --y = awful.screen.focused().geometry['y'] + awful.screen.focused().geometry['height'] / 2 - client.focus.height / 2
+      },
+      callback = function(c)
+        c:relative_move(awful.screen.focused().geometry['width'] / 2 - c.width / 2, awful.screen.focused().geometry['height'] / 2 - c.height / 2, 0, 0)
+      end
+    },
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
@@ -609,7 +774,7 @@ awful.rules.rules = {
 
     -- Set to always map on the tag named "So".
     { rule = { class = "Telegram" },
-      properties = { tag = "So", maximized = false, floating = false } },
+      properties = { tag = "Soc", maximized = false } },
 
     -- Set transparent
     { rule_any = {
@@ -646,8 +811,20 @@ client.connect_signal("manage", function (c)
     -- set Sakura terminal (running musicbox) geometry
     if c.name == "Netease Music Box" and c.class == "Sakura" then
       c.floating = true
-      c:geometry({x = 16, y = math.abs((c.screen.geometry['height'] - 540) / 2), width = c.screen.geometry['width'] - 32, height = 500})
+      c:geometry({x = 16 + c.screen.geometry['x'], y = math.abs((c.screen.geometry['height'] - 540) / 2) + c.screen.geometry['y'], width = c.screen.geometry['width'] - 32, height = 500})
     end
+    -- make the first terminal of corresponding tag floating and nice placed
+    if c.name == "tagFirTer" then
+      local ctag = c.first_tag
+      tagFirTers[ctag.index] = true
+      c.floating = true
+      c:geometry({x = c.screen.geometry['width'] / 2 - 200 + c.screen.geometry['x'], y = c.screen.geometry['height'] / 2 - 180 + c.screen.geometry['y'], width = c.screen.geometry['width'] / 2 + 80, height = c.screen.geometry['height'] / 2 + 100})
+      c:connect_signal("unmanage", function ()
+        tagFirTers[ctag.index] = nil
+      end)
+    end
+
+    c:connect_signal("button::press", function() mytl.closeUnfocusedPopup() end)
 
     if awesome.startup and
       not c.size_hints.user_position
@@ -683,7 +860,7 @@ client.connect_signal("request::titlebars", function(c)
     }
     local title_name_tt = awful.tooltip({
       objects     = {title_name},
-      delay_show  = 1,
+      delay_show  = beautiful.ttdelayshowtime,
       text        = tostring(c.name)
     })
     c:connect_signal('property::name', function()
@@ -692,15 +869,21 @@ client.connect_signal("request::titlebars", function(c)
 
     if pid ~= nil then
       local client_info_timer = gears.timer {
-        timeout   = 2,
+        timeout   = 3,
         autostart = true,
-        callback  = function()
-          title_name:set_text(string.format('RSS: %s | PID: %s ', mywi.showrss(pid), tostring(pid)))
+        callback  = function(c)
+          mytl.calcpuper(pid)
+          local cpuu = mytl.cpuu[pid]
+          if cpuu == nil then
+            cpuu = "--"
+          end
+          title_name:set_text(string.format('CPU: %s | RSS: %s | PID: %s ', cpuu, mytl.getrss(pid), tostring(pid)))
         end
       }
       client_info_timer:emit_signal('timeout')
       c:connect_signal('unmanage', function()
         client_info_timer:stop()
+        mytl.cpuu[pid] = nil
       end)
     end
 

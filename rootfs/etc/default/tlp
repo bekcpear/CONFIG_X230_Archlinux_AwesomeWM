@@ -280,12 +280,12 @@ STOP_CHARGE_THRESH_BAT0=100
 # - Separate multiple radio devices with spaces.
 
 # Radio devices to disable on connect.
-DEVICES_TO_DISABLE_ON_LAN_CONNECT="wifi wwan"
+#DEVICES_TO_DISABLE_ON_LAN_CONNECT="wifi wwan"
 #DEVICES_TO_DISABLE_ON_WIFI_CONNECT="wwan"
 #DEVICES_TO_DISABLE_ON_WWAN_CONNECT="wifi"
 
 # Radio devices to enable on disconnect.
-DEVICES_TO_ENABLE_ON_LAN_DISCONNECT="wifi wwan"
+#DEVICES_TO_ENABLE_ON_LAN_DISCONNECT="wifi wwan"
 #DEVICES_TO_ENABLE_ON_WIFI_DISCONNECT=""
 #DEVICES_TO_ENABLE_ON_WWAN_DISCONNECT=""
 

@@ -1,5 +1,6 @@
 --[[
--- written by Bekcpear <i@ume.ink>
+-- @author Bekcpear <i@ume.ink>
+-- @module mywi
 --]]
 
 local gears     = require("gears")
@@ -8,17 +9,10 @@ local wibox     = require("wibox")
 local naughty   = require("naughty")
 local beautiful = require("beautiful")
 local smoothwp  = require("themes.my.smoothwp")
+local mytl      = require("themes.my.tl")
 local root      = root
 
 local mywi      = {}
-
-mywi.s_easy_async = function(cmd)
-  awful.spawn.easy_async("/usr/bin/bash -c '" .. cmd .. "'", function(stdout, stderr, reason, exit_code)
-    if exit_code ~= 0 then
-      naughty.notify({title = "EXEC: " .. cmd .. " ERR.", text = string.format("[%s] %s, %s", exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
-    end
-  end)
-end
 
 --{{{ Volume widget Start
 -- init
@@ -39,23 +33,182 @@ mywi.sliderbar = wibox.widget {
 mywi.sliderwidget = wibox.container.margin(mywi.sliderbar, 0, 2)
 mywi.volicon = wibox.widget.imagebox(beautiful.vol_ico)
 
+-- {{{ popup Widget to select right voice Card Start
+local volLeftMousePressed = false
+mywi.volicon:connect_signal("button::press", function()
+  if mouse.coords().buttons[1] then
+    volLeftMousePressed = true
+  end
+end)
+
+local function myplacementforvolpopup(p, sg)
+  local sw = sg['bounding_rect'].width
+  local sx = sg['bounding_rect'].x
+  local sy = sg['bounding_rect'].y
+  local pw = p:geometry().width
+  local ph = p:geometry().height
+  p:geometry({x=sx + sw - pw - 10, y=21, width=pw, height=ph})
+end
+
+mytl.popVol         = {}
+mytl.popVol_visible = false
+local voldess       = {}
+local volnames      = {}
+local volsselws     = {}
+local volsselwsl    = {}
+local volssel       = {}
+local volsseld      = {}
+
+local function volpopMouseEnter(w)
+  if not volsselwsl[w.volsselid] then
+    volsselws[w.volsselid].checked = true
+    volsselws[w.volsselid].opacity = 1
+  end
+end
+
+local function volpopMouseLeave(w)
+  if not volsselwsl[w.volsselid] then
+    volsselws[w.volsselid].checked = false
+  end
+  volsselws[w.volsselid].opacity = 0.7
+end
+
+local function volpopMouseClick(w)
+  if not volsselwsl[w.volsselid] then
+    awful.spawn.easy_async_with_shell('pactl set-default-sink ' .. volnames[w.volsselid], function(stdout, stderr, reason, exit_code)
+      if exit_code ~= 0 then
+          naughty.notify({title = "Change default sound device err", text = string.format("Exec: pactl set-default-sink %d error, status: %s, %s, stderr: %s", w.volsselid, exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+        return
+      end
+      for k, _ in pairs(volsselws) do
+        if k ~= w.volsselid then
+          volsselws[k].opacity = 1
+          volsselws[k].checked = false
+          volsselwsl[k] = false
+        else
+          volsselws[k].opacity = 0.7
+          volsselws[k].checked = true
+          volsselwsl[k] = true
+        end
+      end
+    end)
+  end
+end
+
+mywi.volicon:connect_signal("button::release", function()
+  if volLeftMousePressed then volLeftMousePressed = false else return end
+  if not mytl.popVol_visible then
+    awful.spawn.easy_async_with_shell('pactl info', function(stdout, stderr, reason, exit_code)
+      if exit_code == 0 then
+        local voldefaults = string.match(stdout, 'Default%sSink:%s+([%a%d%.%-_]+)')
+        awful.spawn.easy_async_with_shell('pactl list sinks', function(stdout, stderr, reason, exit_code)
+          if exit_code == 0 then
+            voldess   = {}
+            volsselws = {}
+            for volid, volstat, voldes, volclass in string.gmatch(stdout, '[\n\r]*Sink%s+#(%d+).-%s+Name:%s+([%a%d%.%-_]+).-%s+Description:%s+([%s%a%d%.%-_]-)[\n\r].-%s+device%.class%s+=%s+"(%a+)') do
+              if volclass == "sound" then
+                volsselws[volid] = wibox.widget {
+                    checked  = volstat == voldefaults and true or false,
+                    color    = beautiful.bg_icon,
+                    paddings = 2,
+                    shape    = gears.shape.circle,
+                    widget   = wibox.widget.checkbox,
+                    forced_width = 12,
+                    forced_height = 12,
+                    opacity  = 0.7
+                }
+                volsselwsl[volid] = volsselws[volid]["checked"]
+                voldess[volid] = voldes
+                volnames[volid] = volstat
+              end
+              --naughty.notify({text=tostring(volid) .. ' ' .. volstat .. ' ' .. voldes .. ' ' .. volclass, timeout=0})
+            end
+            volssel = {}
+            for k, v in pairs(volsselws) do
+              volsseld[k] = wibox.widget {
+                v,
+                {
+                  {
+                    text   = voldess[k],
+                    align  = left,
+                    valign = center,
+                    forced_height = 12,
+                    widget = wibox.widget.textbox
+                  },
+                  left     = 10,
+                  bottom   = 17,
+                  layout   = wibox.container.margin,
+                },
+                volsselid  = k,
+                forced_height = 30,
+                layout   = wibox.layout.fixed.horizontal
+              }
+              --very worry about CG
+              volsseld[k]:connect_signal("mouse::enter", function(w) volpopMouseEnter(w) end)
+              volsseld[k]:connect_signal("mouse::leave", function(w) volpopMouseLeave(w) end)
+              volsseld[k]:connect_signal("button::release", function(w) volpopMouseClick(w) end)
+              table.insert(volssel, volsseld[k])
+            end
+            volssel["layout"]  = wibox.layout.fixed.vertical
+            mytl.popVol = awful.popup {
+              widget = {
+                volssel,
+                top     = 19,
+                left    = 20,
+                right   = 20,
+                bottom  = 3,
+                layout  = wibox.container.margin,
+              },
+              placement    = myplacementforvolpopup,
+              --shape        = gears.shape.rounded_rect,
+              visible      = true,
+              ontop        = true,
+              opacity      = 0.8,
+            }
+            mytl.popVol_visible = true
+          else
+            naughty.notify({title = "List sound device err", text = string.format("Exec: pactl list sinks error, status: %s, %s, stderr: %s", exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+          end
+        end)
+      else
+        naughty.notify({title = "Check default sound device err", text = string.format("Exec: pactl info error, status: %s, %s, stderr: %s", exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+      end
+    end)
+  end
+end)
+-- popup Widget to select right voice Card End}}}
+
 -- loop to check volume and is_muted
 local vol_v, vol_mute
-function getVolStat(stdout, stderr, reason, exit_code)
-  if exit_code == 0 then
-    vol_mute, vol_v = string.match(stdout, 'Mute:%s*(%a+)%s*[\r\n]*%s*Volume:[%s%a%d:-]+/%s+(%d+)')
-    mywi.sliderbar.value = tonumber(vol_v)
-    if vol_mute == "yes" then mywi.sliderbar.handle_color = beautiful.bg_urgent
-    else mywi.sliderbar.handle_color = beautiful.fg_normal end
-  else
-    naughty.notify({title = "Get initial volume err.", text = tostring(stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
-  end
+function getVolStat()
+  awful.spawn.easy_async_with_shell('pactl info', function(stdout, stderr, reason, exit_code)
+    if exit_code ~= 0 then
+      naughty.notify({title = "Check default sound device err", text = string.format("Exec: pactl info error, status: %s, %s, stderr: %s", exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+      return
+    end
+    local voldefault = string.match(stdout, 'Default%sSink:%s+([%a%d%.%-_]+)')
+    awful.spawn.easy_async_with_shell('pactl list sinks', function(stdout, stderr, reason, exit_code)
+      if exit_code == 0 then
+        for vol_name_i, vol_mute_i, vol_v_i in string.gmatch(stdout, 'Name:%s+([%a%d%.%-_]+).-%s+Mute:%s*(%a+)%s*[\r\n]*%s*Volume:[%s%a%d:-]+/%s+(%d+)') do
+          if vol_name_i == voldefault then
+            vol_v    = vol_v_i
+            vol_mute = vol_mute_i
+          end
+        end
+        mywi.sliderbar.value = tonumber(vol_v)
+        if vol_mute == "yes" then mywi.sliderbar.handle_color = beautiful.bg_urgent
+        else mywi.sliderbar.handle_color = beautiful.fg_normal end
+      else
+        naughty.notify({title = "Get initial volume err.", text = tostring(stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+      end
+    end)
+  end)
 end
 
 local vol_timer = gears.timer({ timeout = 2 })
 vol_timer:start()
 vol_timer:connect_signal("timeout", function()
-    awful.spawn.easy_async("pactl list sinks", getVolStat)
+    getVolStat()
   end
 )
 vol_timer:emit_signal("timeout")
@@ -80,16 +233,16 @@ local muted = ''
 mywi.sliderbar:connect_signal("widget::redraw_needed", function(w)
   vol_timer:stop()
   muted = ''
-  mywi.s_easy_async(string.format("/opt/bin/volume-control.sh vol %s", w.value))
+  mytl.s_easy_async(string.format("/opt/bin/volume-control.sh vol %s", w.value))
   if w.value == 0 then mywi.volicon:set_image(beautiful.vol_no_ico)
   elseif w.value <= 50 then mywi.volicon:set_image(beautiful.vol_low_ico)
   else mywi.volicon:set_image(beautiful.vol_ico) end
   if mywi.sliderbar.handle_color == beautiful.bg_urgent then
-    mywi.s_easy_async("/opt/bin/volume-control.sh mut 1")
+    mytl.s_easy_async("/opt/bin/volume-control.sh mut 1")
     muted = '[M]'
     mywi.volicon:set_image(beautiful.vol_mute_ico)
   else
-    mywi.s_easy_async("/opt/bin/volume-control.sh mut 0")
+    mytl.s_easy_async("/opt/bin/volume-control.sh mut 0")
   end
   if naughty.getById(mywi.sliderbar.notify_id) ~= nil then
     naughty.replace_text(naughty.getById(mywi.sliderbar.notify_id), nil, "Vol: " .. tostring(w.value) .. "% " .. muted)
@@ -100,59 +253,6 @@ mywi.sliderbar:connect_signal("widget::redraw_needed", function(w)
   vol_timer:start()
   return true
 end)
-
--- toggle MIC mute
-mywi.micmutetoggle = function()
-  awful.spawn.easy_async('pactl list sources', function(stdout, stderr, reason, exit_code)
-    if exit_code == 0 then
-      local i       = 0
-      local mic_id, l_mic_id, l_mic_stat, l_mic_class
-      for l_mic_id, l_mic_stat, l_mic_class in string.gmatch(stdout, '[\n\r]*Source%s+#(%d+).-%s+Mute:%s+(%a+).-%s+device%.class%s+=%s+"(%a+)') do
-        if l_mic_class == 'sound' then
-          mic_id    = l_mic_id
-        end
-      end
-      mywi.s_easy_async("pactl set-source-mute " .. mic_id .. " toggle")
-    else
-      naughty.notify({title = "Toggle MIC mute err.", text = string.format("Exec: pactl list sources error, status: %s, %s, stderr: %s", exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
-    end
-  end)
-end
--- Volume widget End }}}
-
--- read file
-local file        = {}
-local file_s      = {}
-local file_err    = {}
-local file_err_no = {}
-local file_i      = 0
-function file_read(name, notify_err, read_mode)
-  if notify_err == nil then
-    notify_err    = true
-  end
-  if read_mode == true then
-    read_mode     = '*a'
-  else
-    read_mode     = '*l'
-  end
-  file_i          = file_i + 1
-  if file_i > 20 then
-    file_i        = 0
-  end
-  file[file_i], file_err[file_i], file_err_no[file_i] = io.open(name,"r")
-  if file[file_i] ~= nil then
-    file_s[file_i] = file[file_i]:read(read_mode)
-    if file_s[file_i] ~= nil then
-      file[file_i]:close()
-      return file_s[file_i]
-    end
-    file[file_i]:close()
-  end
-  if (file[file_i] == nil or file_s[file_i] == nil) and notify_err then
-    naughty.notify({title = "Read file err.", text = string.format("[%s] %s", tostring(file_err_no[file_i]), tostring(file_err[file_i])), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
-  end
-  return false
-end
 
 --{{{  Net traffic widget start
 local netbar_up = wibox.widget {
@@ -257,7 +357,7 @@ mywi.netwidget = wibox.widget {
 
 local netwidget_t = awful.tooltip({
   objects = {mywi.netwidget},
-  delay_show = 1
+  delay_show = beautiful.ttdelayshowtime
 })
 
 -- loop to check speed
@@ -335,7 +435,7 @@ net_timer:connect_signal("timeout", function()
     netwidgethoverinit0   = true
     netwidget_t.text      = tostring(conn_name) .. ' (' .. tostring(conn_type) .. ', ' .. tostring(interface) .. ')'
   end
-  vul                     = file_read("/sys/class/net/" .. tostring(interface) .. "/carrier", false)
+  vul                     = mytl.file_read("/sys/class/net/" .. tostring(interface) .. "/carrier", false)
   if vul == false or tonumber(vul) ~= 1 or (conn_type ~= 'wifi' and conn_type ~='ethernet') then 
     netimage:set_image(beautiful.net_off_ico)
     netwidget_t.text      = 'offline'
@@ -382,8 +482,8 @@ net_timer:connect_signal("timeout", function()
       up            = 0
       dw            = 0
     end
-    now_tx          = tonumber(file_read("/sys/class/net/" .. tostring(interface) .. "/statistics/tx_bytes"))
-    now_rx          = tonumber(file_read("/sys/class/net/" .. tostring(interface) .. "/statistics/rx_bytes"))
+    now_tx          = tonumber(mytl.file_read("/sys/class/net/" .. tostring(interface) .. "/statistics/tx_bytes"))
+    now_rx          = tonumber(mytl.file_read("/sys/class/net/" .. tostring(interface) .. "/statistics/rx_bytes"))
     if now_rx >= 0 and now_tx >= 0 and last_rx > 0 and last_tx > 0  then
       up            = (now_tx - last_tx) / 2048
       dw            = (now_rx - last_rx) / 2048
@@ -441,7 +541,7 @@ mywi.batpbar = wibox.widget {
 }
 local batpbar_t = awful.tooltip({
   objects           = {mywi.batpbar},
-  delay_show        = 1
+  delay_show        = beautiful.ttdelayshowtime
 })
 
 -- loop to check battery status
@@ -454,7 +554,7 @@ local ac_online_stat    = 0
 bat_timer0:start()
 bat_timer1:start()
 bat_timer0:connect_signal("timeout", function()
-  ac_online             =  string.match(tostring(file_read('/sys/class/power_supply/AC/online')), '([^%s\n\r]+)')
+  ac_online             =  string.match(tostring(mytl.file_read('/sys/class/power_supply/AC/online')), '([^%s\n\r]+)')
   if ac_online == '1' then
     if ac_online_stat ~= 1 then
       if naughty.getById(mywi.batpbar.notify_id) ~= nil then
@@ -463,14 +563,14 @@ bat_timer0:connect_signal("timeout", function()
       ac_online_stat    = 1
       bat_s_img.visible = true
       bat_timer1:emit_signal('timeout')
-      mywi.s_easy_async("/opt/bin/switch_power_status.sh u acon")
+      mytl.s_easy_async("/opt/bin/switch_power_status.sh u acon")
     end
   elseif ac_online == '0' then
     if ac_online_stat ~= 2 then
       ac_online_stat    = 2
       bat_s_img.visible = false
       bat_timer1:emit_signal('timeout')
-      mywi.s_easy_async("/opt/bin/switch_power_status.sh u acoff")
+      mytl.s_easy_async("/opt/bin/switch_power_status.sh u acoff")
     end
   end
 end)
@@ -499,7 +599,7 @@ bat_timer1:connect_signal("timeout", function()
   min_unit              = ' minutes'
   hour_unit             = ' hours '
   power_status_text     = ''
-  bat_uevent            = tostring(file_read('/sys/class/power_supply/BAT0/uevent', false, true))
+  bat_uevent            = tostring(mytl.file_read('/sys/class/power_supply/BAT0/uevent', false, true))
   bat_s                 = string.match(bat_uevent, 'POWER_SUPPLY_STATUS=(%a+)')
   bat_v                 = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_NOW=(%d+)'))
   bat_vm                = tonumber(string.match(bat_uevent, 'POWER_SUPPLY_VOLTAGE_MIN_DESIGN=(%d+)'))
@@ -676,7 +776,7 @@ mywi.tempgraph = wibox.widget {
 }
 local tempgraph_t = awful.tooltip({
   objects           = {mywi.tempgraph},
-  delay_show        = 1
+  delay_show        = beautiful.ttdelayshowtime
 })
 
 -- loop to check temperature
@@ -687,11 +787,11 @@ local fans_c      = ''
 local fans        = 0
 local temp_flag   = 0
 temp_timer:connect_signal('timeout', function()
-  temper          = tonumber(file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon1/temp1_input'))
+  temper          = tonumber(mytl.file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon1/temp1_input'))
   fans_c          = ''
   hwmon_num       = 1
   while fans_c == '' or fans_c == false do
-    fans_c        = file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon' .. hwmon_num .. '/fan1_input', false)
+    fans_c        = mytl.file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon' .. hwmon_num .. '/fan1_input', false)
     hwmon_num     = hwmon_num + 1
     if hwmon_num >= 10 then
       naughty.notify({title = "Get fan speed error", text = 'Too many tries, assign fan speed variable to \'-1\'.', timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
@@ -722,41 +822,81 @@ temp_timer:start()
 temp_timer:emit_signal('timeout')
 -- Temperature widget End }}}
 
--- {{{ Show brightness Start
-mywi.showbrightness_notify_id = 0
-local brightness              = 0
-local brightness_max          = 0
-brightness_max                = tonumber(file_read('/sys/class/backlight/acpi_video0/max_brightness'))
-mywi.showBrightness = function(act)
-  brightness                  = tonumber(file_read('/sys/class/backlight/acpi_video0/brightness')) + act
-  if brightness > brightness_max then
-    brightness                = brightness_max
-  elseif brightness < 0 then
-    brightness                = 0
+-- {{{ Show whole system CPU usage Start
+local cpuubarC = wibox.widget {
+  paddings     = 0,
+  border_width = 0,
+  colors       = {beautiful.graph_0},
+  bg           = beautiful.fg_normal, 
+  min_value    = 0,
+  max_value    = 400,
+  values       = {10},
+  start_angle  = 1.57,
+  rounded_edge = false,
+  thickness    = 3,
+  forced_width = 13,
+  forced_height= 13,
+  widget = wibox.container.arcchart,
+}
+mywi.cpuubar = wibox.widget {
+  {
+    cpuubarC,
+    reflection = {horizontal = true, vertical = false},
+    widget = wibox.container.mirror
+  },
+  bottom = 1,
+  left   = 1,
+  widget = wibox.container.margin
+}
+local cpuubar_t = awful.tooltip({
+  objects = {mywi.cpuubar},
+  delay_show = beautiful.ttdelayshowtime
+})
+local wholecputi_ii    = true -- init time?
+local wholecputi_w0    = 0    -- warning 0 stage counter
+local wholecputi_w1    = 0    -- warning 1 stage counter
+local wholecputi_l     = 0
+local wholecputi_timer = gears.timer({ timeout = 3 })
+wholecputi_timer:start()
+wholecputi_timer:connect_signal("timeout", function()
+  local wocti0, wocti1, wocti2, wocti3, wocti4, wocti5, wocti6, wocti7, wocti8 = string.match(mytl.file_read('/proc/stat'), '(%d+)%s(%d+)%s(%d+)%s%d+%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)')
+  local wholecputi   = wocti0 + wocti1 + wocti2 + wocti3 + wocti4 + wocti5 + wocti6 + wocti7 + wocti8
+  local wholecputi_d = wholecputi - wholecputi_l
+  wholecputi_l       = wholecputi
+  if wholecputi_ii then
+    wholecputi_ii = false
+    return
   end
-  if naughty.getById(mywi.showbrightness_notify_id) ~= nil then
-    naughty.replace_text(naughty.getById(mywi.showbrightness_notify_id), nil, string.format("Brightness: %d", brightness))
-    naughty.reset_timeout(naughty.getById(mywi.showbrightness_notify_id), 1)
+  local usePerc      = wholecputi_d / 3.012 / mytl.clockTicks * 100
+  cpuubarC.values    = {usePerc}
+  cpuubarC.max_value = mytl.clockTicks * mytl.cpun
+  if usePerc / mytl.clockTicks / mytl.cpun > 0.6 then
+    if wholecputi_w1 > 3 then
+      cpuubarC.colors    = {beautiful.bg_urgent1}
+      cpuubarC.thickness = 6
+    else
+      wholecputi_w1      = wholecputi_w1 + 1
+    end
+  elseif usePerc / mytl.clockTicks / mytl.cpun > 0.4 then
+    if wholecputi_w0 > 2 then
+      cpuubarC.colors    = {beautiful.graph_1}
+      cpuubarC.thickness = 4
+    else
+      wholecputi_w0      = wholecputi_w0 + 1
+    end
   else
-    mywi.showbrightness_notify_id = naughty.notify({text = string.format("Brightness: %d", brightness), timeout = 1, position = 'bottom_middle'}).id
+    if wholecputi_w0 == 0 then
+      cpuubarC.colors    = {beautiful.graph_0}
+      cpuubarC.thickness = 3
+      wholecputi_w1      = 0
+    else
+      wholecputi_w0      = wholecputi_w0 - 1
+    end
   end
-end
--- Show brightness End }}}
-
--- {{{ Show rss Start
-local rss = 0
-mywi.showrss = function(pid)
-  rss     = tonumber(string.match(file_read('/proc/' .. tostring(pid) .. '/statm'), '%d+%s+(%d+)')) * 4
-  if rss < 1024 then -- KiB
-    rss   = tostring(rss) .. ' KiB'
-  elseif rss >= 1024 and rss / 1024 < 1024 then -- MiB
-    rss   = string.format('%.2f MiB', rss / 1024)
-  else -- GiB
-    rss   = string.format('%.2f GiB', rss / 1024 / 1024)
-  end
-  return rss
-end
--- Show rss End }}}
+  cpuubar_t:set_text(string.format("CPU usage(%d cores): %.1f%%", mytl.cpun, usePerc))
+end)
+wholecputi_timer:emit_signal("timeout")
+-- Show whole system CPU usage End }}}
 
 --{{{ Separator
 mywi.separator  = wibox.widget {
@@ -792,7 +932,7 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
   local wall_hour   = 0
 
   math.randomseed(os.time())
-  beautiful.wallpaper = function(s)
+  beautiful.wallpaper = function(s, noFade)
     if s == nil then
       naughty.notify({title = "Random wallpaper err.", text = 'nil screen', timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
       return nil
@@ -855,7 +995,7 @@ if beautiful.wallpaper_dir ~= nil or (beautiful.wallpaper_dir_day ~= nil and bea
           else
             wall_path     = wall_dir .. wall_a[wall_index]
           end
-          if beautiful.wallpaper_fade == true then
+          if beautiful.wallpaper_fade == true and noFade ~= true then
             smoothwp.fade(wall_path, s)
           else
             gears.wallpaper.maximized(wall_path, s, false)

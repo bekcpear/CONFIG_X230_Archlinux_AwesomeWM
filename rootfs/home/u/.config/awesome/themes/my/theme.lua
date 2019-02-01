@@ -1,5 +1,5 @@
 --[[
--- written by Bekcpear <i@ume.ink>
+-- @author Bekcpear <i@ume.ink>
 --]]
 
 local gears = require("gears")
@@ -27,8 +27,10 @@ theme.fg_urgent                                 = theme.fg_normal
 
 theme.bg_normal                                 = "#000000"
 theme.bg_focus                                  = "#000000"
+theme.bg_icon                                   = "#78a4ff"
 theme.bg_warn                                   = "#ffee58"
 theme.bg_urgent                                 = "#ef5350"
+theme.bg_urgent1                                = "#ff0000"
 theme.bg_green                                  = "#66bb6a"
 
 theme.graph_0                                   = "#78a4ff"
@@ -36,36 +38,39 @@ theme.graph_1                                   = "#ec407a"
 
 theme.tooltip_fg                                = theme.fg_focus
 theme.tooltip_bg                                = theme.bg_normal
+theme.ttdelayshowtime                           = 0.5
 
 theme.tasklist_fg_focus                         = theme.fg_normal
 theme.tasklist_fg_normal                        = theme.fg_normal
-theme.tasklist_bg_focus                         = theme.bg_focus
+theme.tasklist_bg_focus                         = theme.bg_icon
 theme.tasklist_bg_normal                        = theme.bg_normal
-theme.tasklist_spacing                          = 1
+--theme.tasklist_spacing                          = 1
 theme.tasklist_shape                            = gears.shape.rectangle
-theme.tasklist_shape_focus                      = gears.shape.rounded_rect
-theme.tasklist_shape_border_width_focus         = 0.5
-theme.tasklist_shape_border_color_focus         = theme.fg_normal
+--theme.tasklist_shape_focus                      = gears.shape.rectangle
+--theme.tasklist_shape_border_width_focus         = 2
+--theme.tasklist_shape_border_color_focus         = theme.bg_icon
 theme.tasklist_fg_minimize                      = "#616161"
 theme.tasklist_disable_icon                     = false
 
 theme.taglist_fg_focus                          = theme.fg_focus
 theme.taglist_fg_normal                         = theme.fg_normal
-theme.taglist_bg_focus                          = "#111111"
-theme.taglist_bg_normal                         = "#111111"
+theme.taglist_bg_focus                          = theme.bg_icon
+theme.taglist_bg_normal                         = theme.bg_normal
 
 theme.tooltip_bg                                = theme.taglist_bg_normal
 
 theme.titlebar_fg_normal                        = theme.tasklist_fg_minimize
 theme.titlebar_fg_focus                         = theme.tasklist_fg_minimize
-theme.titlebar_bg_normal                        = "#212121"
-theme.titlebar_bg_focus                         = theme.bg_focus
+--theme.titlebar_bg_normal                        = "#212121"
+--theme.titlebar_bg_focus                         = theme.bg_focus
+theme.titlebar_bg_normal                        = "#000000d0"
+theme.titlebar_bg_focus                         = theme.titlebar_bg_normal
 
 theme.border_normal                             = theme.titlebar_bg_normal
 theme.border_focus                              = theme.bg_focus
 theme.border_width                              = 0
 
-theme.useless_gap                               = 8
+theme.useless_gap                               = 10
 
 theme.awesome_icon                              = theme.dir .."/icons/awesome.png"
 theme.dropdown_icon                             = theme.dir .."/icons/dropdown_icon.png"
@@ -76,8 +81,10 @@ theme.lock_icon                                 = theme.dir .."/icons/lock_icon.
 theme.exit_icon                                 = theme.dir .."/icons/exit_icon.png"
 theme.warn_icon                                 = theme.dir .."/icons/warnning.png"
 
-theme.taglist_squares_sel                       = theme.dir .. "/icons/square_unsel.png"
-theme.taglist_squares_unsel                     = theme.dir .. "/icons/square_unsel.png"
+--theme.taglist_squares_sel                       = theme.dir .. "/icons/square_unsel.png"
+--theme.taglist_squares_unsel                     = theme.dir .. "/icons/square_unsel.png"
+--theme.taglist_squares_sel                       = theme.dir .. "/icons/taglist_selbg.png"
+--theme.taglist_squares_sel_empty                 = theme.taglist_squares_sel
 
 theme.temp_graph_bot_normal                     = theme.dir .. "/icons/temp_bot_normal.png"
 theme.temp_graph_bot_high                       = theme.dir .. "/icons/temp_bot_high.png"

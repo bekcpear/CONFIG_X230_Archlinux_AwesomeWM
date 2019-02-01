@@ -18,7 +18,7 @@ function testBin(){
 function hanVol(){
   testBin pactl
   if [ $RTBOOL -eq 1 ]; then
-    local n=$(pactl list sinks | head -1 | awk -F# '{printf $2}')
+    local n=$(pactl info | grep 'Default Sink' | awk -F' ' '{printf $3}')
   fi
   local l=$(ps -e | grep pulseaudio | wc -l)
   if [[ $RTBOOL == 1 && $l =~ ^[0-9]+$ && $l > 0 ]]; then
