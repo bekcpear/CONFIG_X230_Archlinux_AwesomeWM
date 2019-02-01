@@ -362,7 +362,7 @@ URxvt*cursorColor2   : #abcdef
 !URxvt*font: xft:DejaVu Sans Mono for Powerline:antialias=True:pixelsize=14,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=14
 URxvt*font: xft:Source Code Pro for Powerline:antialias=True:pixelsize=13,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=13
 URxvt*depth: 32
-URxvt*background: rgba:0000/0000/0000/d000
+URxvt*background: rgba:0000/0000/0000/cc00
 !URxvt*transparent: true
 !URxvt*tintColor: #000000
 !URxvt*shading: 30

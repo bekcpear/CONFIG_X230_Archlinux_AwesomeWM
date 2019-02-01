@@ -115,7 +115,7 @@ mywi.volicon:connect_signal("button::release", function()
                     widget   = wibox.widget.checkbox,
                     forced_width = 12,
                     forced_height = 12,
-                    opacity  = 0.7
+                    opacity  = 0.7,
                 }
                 volsselwsl[volid] = volsselws[volid]["checked"]
                 voldess[volid] = voldes
@@ -160,10 +160,9 @@ mywi.volicon:connect_signal("button::release", function()
                 layout  = wibox.container.margin,
               },
               placement    = myplacementforvolpopup,
-              --shape        = gears.shape.rounded_rect,
               visible      = true,
               ontop        = true,
-              opacity      = 0.8,
+              opacity      = beautiful.opacity,
             }
             mytl.popVol_visible = true
           else
@@ -885,12 +884,13 @@ wholecputi_timer:connect_signal("timeout", function()
       wholecputi_w0      = wholecputi_w0 + 1
     end
   else
-    if wholecputi_w0 == 0 then
+    if wholecputi_w0 <= 0 then
       cpuubarC.colors    = {beautiful.graph_0}
       cpuubarC.thickness = 3
       wholecputi_w1      = 0
+      wholecputi_w0      = 0
     else
-      wholecputi_w0      = wholecputi_w0 - 1
+      wholecputi_w0      = wholecputi_w0 - 2
     end
   end
   cpuubar_t:set_text(string.format("CPU usage(%d cores): %.1f%%", mytl.cpun, usePerc))

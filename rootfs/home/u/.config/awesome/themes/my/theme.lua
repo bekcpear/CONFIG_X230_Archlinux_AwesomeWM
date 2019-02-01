@@ -27,6 +27,8 @@ theme.fg_urgent                                 = theme.fg_normal
 
 theme.bg_normal                                 = "#000000"
 theme.bg_focus                                  = "#000000"
+--theme.bg_ttbg                                   = "#78a4ffc0"
+theme.bg_ttbg                                   = "#78a4ff"
 theme.bg_icon                                   = "#78a4ff"
 theme.bg_warn                                   = "#ffee58"
 theme.bg_urgent                                 = "#ef5350"
@@ -36,13 +38,19 @@ theme.bg_green                                  = "#66bb6a"
 theme.graph_0                                   = "#78a4ff"
 theme.graph_1                                   = "#ec407a"
 
+theme.opacity                                   = 0.8
+
 theme.tooltip_fg                                = theme.fg_focus
 theme.tooltip_bg                                = theme.bg_normal
+theme.tooltip_opacity                           = theme.opacity
 theme.ttdelayshowtime                           = 0.5
+
+theme.wibar_opacity                             = theme.opacity
+theme.notification_opacity                      = theme.opacity
 
 theme.tasklist_fg_focus                         = theme.fg_normal
 theme.tasklist_fg_normal                        = theme.fg_normal
-theme.tasklist_bg_focus                         = theme.bg_icon
+theme.tasklist_bg_focus                         = theme.bg_ttbg
 theme.tasklist_bg_normal                        = theme.bg_normal
 --theme.tasklist_spacing                          = 1
 theme.tasklist_shape                            = gears.shape.rectangle
@@ -54,7 +62,7 @@ theme.tasklist_disable_icon                     = false
 
 theme.taglist_fg_focus                          = theme.fg_focus
 theme.taglist_fg_normal                         = theme.fg_normal
-theme.taglist_bg_focus                          = theme.bg_icon
+theme.taglist_bg_focus                          = theme.bg_ttbg
 theme.taglist_bg_normal                         = theme.bg_normal
 
 theme.tooltip_bg                                = theme.taglist_bg_normal
@@ -63,8 +71,11 @@ theme.titlebar_fg_normal                        = theme.tasklist_fg_minimize
 theme.titlebar_fg_focus                         = theme.tasklist_fg_minimize
 --theme.titlebar_bg_normal                        = "#212121"
 --theme.titlebar_bg_focus                         = theme.bg_focus
-theme.titlebar_bg_normal                        = "#000000d0"
+theme.titlebar_bg_normal                        = "#000000cc" --0.815 opacity
 theme.titlebar_bg_focus                         = theme.titlebar_bg_normal
+
+theme.menubar_bg_normal                         = theme.titlebar_bg_normal
+theme.menu_bg_normal                            = theme.titlebar_bg_normal
 
 theme.border_normal                             = theme.titlebar_bg_normal
 theme.border_focus                              = theme.bg_focus

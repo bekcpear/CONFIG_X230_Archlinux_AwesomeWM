@@ -272,7 +272,7 @@ powerlauncher = awful.widget.launcher({
 
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
-    set_wallpaper(s)
+    set_wallpaper(s, true)
     -- Loop to re-set wallpaper
     gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() set_wallpaper(s) end})
 
@@ -784,7 +784,7 @@ awful.rules.rules = {
         }
       },
       properties = {
-        opacity = 0.85
+        opacity = beautiful.opacity
       }
     },
     { rule_any = {
@@ -793,8 +793,12 @@ awful.rules.rules = {
         }
       },
       properties = {
-        opacity = 0.75
-      }
+        opacity = beautiful.opacity - 0.1,
+      },
+      callback = function(c)
+        c:connect_signal("unfocus", function(c) c.opacity = beautiful.opacity - 0.3 end)
+        c:connect_signal("focus", function(c) c.opacity = beautiful.opacity - 0.1 end)
+      end
     },
 }
 -- }}}
@@ -887,7 +891,14 @@ client.connect_signal("request::titlebars", function(c)
       end)
     end
 
-    awful.titlebar(c) : setup {
+    local titlebarbg = beautiful.titlebar_bg_normal
+    if string.find(c.name, 'Cloud%sMusic$') ~= nil then -- for Netease Cloud Music Black Theme
+      titlebarbg = "#222225"
+    end
+    awful.titlebar(c, {
+        bg_normal = titlebarbg,
+        bg_focus  = titlebarbg
+      }) : setup {
         { -- Left
             awful.titlebar.widget.closebutton    (c),
             awful.titlebar.widget.maximizedbutton(c),
