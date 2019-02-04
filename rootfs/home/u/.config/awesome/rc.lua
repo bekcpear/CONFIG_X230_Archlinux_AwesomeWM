@@ -494,11 +494,23 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
-    awful.key({ modkey, "Control" }, "j",
+    awful.key({ modkey, "Control" }, "i",
         function ()
             myhok.ccenter()
         end,
         {description = "make focused client center", group = "client"}
+    ),
+    awful.key({ modkey, "Control" }, "l",
+        function ()
+            myhok.cleft()
+        end,
+        {description = "make focused client left", group = "client"}
+    ),
+    awful.key({ modkey, "Control" }, "h",
+        function ()
+            myhok.cright()
+        end,
+        {description = "make focused client right", group = "client"}
     ),
     awful.key({ modkey,           }, "w", function () powermenu:show() end,
               {description = "show power menu", group = "awesome"}),
@@ -740,6 +752,8 @@ awful.rules.rules = {
           "Wpa_gui",
           "pinentry",
           "veromix",
+          "pavucontrol",
+          "Pavucontrol",
           "xtightvncviewer"},
         name = {
           "Event Tester",  -- xev.
@@ -892,7 +906,7 @@ client.connect_signal("request::titlebars", function(c)
     end
 
     local titlebarbg = beautiful.titlebar_bg_normal
-    if string.find(c.name, 'Cloud%sMusic$') ~= nil then -- for Netease Cloud Music Black Theme
+    if c.name and string.find(c.name, 'Cloud%sMusic$') ~= nil then -- for Netease Cloud Music Black Theme
       titlebarbg = "#222225"
     end
     awful.titlebar(c, {
