@@ -1,18 +1,22 @@
----------------------------------------------------------------------------
--- @author Bekcpear modified from Uli Schlachter's wallpaper.lua
+--------------------------------------------------------------------------------------------
+-- @author moego <moego@moego.me> modified from Uli Schlachter's wallpaper.lua
 -- @module smoothwp
----------------------------------------------------------------------------
+-- Usage:
+--   local smoothwp = require("theme.<yourtheme>.smoothwp")
+--     smoothwp.fade(<wallpaper file path>, <screen object>)
+-- if multi screens existed, this function will switch wallpapers one by one on the screen
+-- the fade function will take up a lot of CPU resources in a short time
+-- refer https://stackoverflow.com/questions/48378414/is-there-a-way-to-switch-the-wallpapers-with-a-fade-transition-effect-on-awesome
+--------------------------------------------------------------------------------------------
 
 local cairo = require("lgi").cairo
 local color = require("gears.color")
 local surface = require("gears.surface")
 local timer = require("gears.timer")
 local debug = require("gears.debug")
---local naughty = require("naughty")
 local root = root
 
 local smoothwp = { mt = {} }
-local awtf = ""
 
 local function root_geometry()
     local width, height = root.size()
@@ -21,10 +25,18 @@ end
 
 -- Information about a pending wallpaper change, see prepare_context()
 local pending_wallpaper = nil
+
+-- The fixed last source surface used when transitioning wallpaper,
+-- see prepare_context()
 local last_source       = nil
+-- The active screen index, see smoothwp.fade()
 local asindex           = -1
+-- The buffered wallpaper paths, see smoothwp.fade()
 local wpaths            = {}
+-- The buffered screens that have not been switched wallpapers,
+-- see prepare_context()
 local screens           = {}
+
 
 local function get_screen(s)
     return s and screen[s]
@@ -46,6 +58,10 @@ local function prepare_context(s)
 
     if not pending_wallpaper then
         -- Prepare a pending wallpaper
+        -- When transitioning the wallpaper, the source surface will be used
+        -- many times. In order to simplify the calculation of transparency
+        -- factor, it's necessary to save a base source surface for each
+        -- transition.
         if last_source == nil then
             source = surface(root.wallpaper())
             last_source = surface.duplicate_surface(source)
@@ -81,6 +97,7 @@ local function prepare_context(s)
         target = pending_wallpaper.surface
     end
 
+    -- preparing the cario
     cr = cairo.Context(target)
 
     if source then
@@ -111,7 +128,6 @@ end
 --   a description for gears.color or a cairo pattern.
 -- @see gears.color
 function smoothwp.set(pattern)
-    --pattern:write_to_png("/tmp/awt/" .. tostring(os.clock()) .. "-" .. tostring(f) .. ".png")
     if cairo.Surface:is_type_of(pattern) then
         pattern = cairo.Pattern.create_for_surface(pattern)
     end
@@ -128,23 +144,24 @@ end
 -- @param surf The wallpaper to set. Either a cairo surface or a file name.
 -- @param s The screen whose wallpaper should be set. Can be nil, in which case
 --   all screens are set.
--- @factor the transparent 0.0 to 1.0
+-- @factor the transparency, from 0.0 to 1.0
 local function maximized(surf, s, factor)
     local geom, cr = prepare_context(s)
     local original_surf = surf
     surf = surface.load_uncached(surf)
+
+    -- scale the new source surface to fill the screen
     local w, h = surface.get_size(surf)
     local aspect_w = geom.width / w
     local aspect_h = geom.height / h
-
     aspect_h = math.max(aspect_w, aspect_h)
     aspect_w = math.max(aspect_w, aspect_h)
     cr:scale(aspect_w, aspect_h)
-
     local scaled_width = geom.width / aspect_w
     local scaled_height = geom.height / aspect_h
     cr:translate((scaled_width - w) / 2, (scaled_height - h) / 2)
 
+    -- Draw new wallpaper according to transparency
     cr:set_source_surface(surf, 0, 0)
     cr.operator = cairo.Operator.SOURCE
     cr:paint_with_alpha(factor)
@@ -156,6 +173,9 @@ local function maximized(surf, s, factor)
     end
 end
 
+--- Push unprocessed wallpapers and screens into the buffer
+-- @param p the unprocessed wallpaper path
+-- @param s the unprocessed screen
 local function pushFade(p, s)
     for i = 1, table.maxn(screens) do
         if s.index == screens[i].index then
@@ -166,6 +186,7 @@ local function pushFade(p, s)
     table.insert(screens, s)
 end
 
+--- Pull a pair of an unprocessed wallpaper and the coresponding screen
 local function pullFade()
     local p, s
     p = table.remove(wpaths, 1)
@@ -173,6 +194,15 @@ local function pullFade()
     return p, s
 end
 
+--- Switch wallpapers with a fade transition
+--- Setting the wallpaper is for the entire root area, there is no way to
+--set to a specical screen. So in order to achieve the effect of wallpaper
+--transition on each screen, I have to switch one screen after another.
+--- Steps and the interval time determine the overall time required to switch
+--once. The specific time will vary depending on the performance of the
+--computer, please adjust by yourself.
+-- @param wpath a new wallpaper path
+-- @param s the corrensponding screen
 function smoothwp.fade(wpath, s)
     local steps      = 120
     local steps_done = 0
@@ -186,7 +216,6 @@ function smoothwp.fade(wpath, s)
         end
     end
 
-    --naughty.notify({text="asindex: " .. tostring(asindex)})
     timer.start_new(interval, function()
         steps_done = steps_done + 1
         maximized(wpath, s, steps_done / steps)
