@@ -35,7 +35,7 @@
          end
   ```
 
-* 无 Display Manager, tty 下通过 shell 判断是否 startx
+* <s>无 Display Manager, tty 下通过 shell 判断是否 startx</s> 因为 DBUS 参数的问题，最终还是用上了 SDDM 作为 DM，并使用了 [Starcraft](https://www.opendesktop.org/p/1231525/) 主题，依赖 `plasma-workspace` `plasma-workspace` 这两个包，去掉了主题中显示电池的部件，不然依赖更多的包；因为 熵 的问题，启动 sddm 有 43 秒的延迟，安装 `haveged` 可以解决，但是根据 [Archwiki](https://wiki.archlinux.org/index.php/Haveged) 的说明会导致生成的熵的质量下降，所以我没用，决定忍受 43 秒的等待。
 * 利用 systemd 服务实现睡眠前如果未锁屏则自动锁屏后睡眠
 * <s>Xterm 作为主 terminal, 透明已经在 awesome 下配置，需要启动 xcompmgr 以实现</s> 替换成了 compton 以实现窗口阴影/过渡，几个部件透明等效果
 * URxvr 作爲主 Terminal，透明使用自帶參數配置在 `~/.Xresources` 文件內

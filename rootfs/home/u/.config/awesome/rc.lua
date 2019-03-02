@@ -277,7 +277,7 @@ awful.screen.connect_for_each_screen(function(s)
     gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() set_wallpaper(s) end})
 
     -- Each screen has its own tag table.
-    awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Sur", "Def", "Des", "Det", "Soc", "10", "11" }, s, awful.layout.layouts[1])
+    awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Sur", "Mai", "Des", "Dei", "Soc", "10", "11" }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -621,7 +621,9 @@ globalkeys = gears.table.join(
                   if mywi.sliderbar.handle_color == beautiful.fg_normal then mywi.sliderbar.handle_color = beautiful.bg_urgent
                   else mywi.sliderbar.handle_color = beautiful.fg_normal end
               end,
-              {description = "Toggle mute", group = "Media"})
+              {description = "Toggle mute", group = "Media"}),
+    awful.key({ modkey, "Control" }, "a", function() mytl.s_easy_async("/usr/bin/flameshot gui") end,
+              {description = "capture screen area", group = "Media"})
 )
 
 clientkeys = gears.table.join(
@@ -786,7 +788,10 @@ awful.rules.rules = {
       }, properties = { titlebars_enabled = true }
     },
 
-    -- Set to always map on the tag named "So".
+    -- Set to always map on the tag named "Mai".
+    { rule = { instance = "^mail%.google%.com.+" },
+      properties = { tag = "Mai", maximized = false, floating = false} },
+    -- Set to always map on the tag named "Soc".
     { rule = { class = "Telegram" },
       properties = { tag = "Soc", maximized = false } },
 
@@ -800,6 +805,9 @@ awful.rules.rules = {
       properties = {
         opacity = beautiful.opacity
       }
+    },
+    { rule = {class = "netease-cloud-music", type = "utility"},
+      properties = { sticky = true },
     },
     { rule_any = {
         class = {
@@ -936,6 +944,46 @@ client.connect_signal("request::titlebars", function(c)
         },
         layout = wibox.layout.align.horizontal
     }
+--    elseif c.width then
+--      -- suppose the height of titlebar is 20 pixel
+--      -- transparency is 0.815 (#xxxxxxCC)
+--      local ccmd = "/home/u/go/bin/getColor " .. tostring(math.floor(c.x + c.width / 2)) .. " " .. tostring(c.y + 22)
+--      awful.spawn.easy_async_with_shell(ccmd, function(stdout, stderr, exit_reason, exit_code)
+--        if exit_code ~= 0 then
+--          naughty.notify({title = "Get a pixel color error", text = string.format("cmd: %s, status: %s, %s, stderr: %s", ccmd, exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
+--        else
+--          titlebarbg = "#" .. stdout
+--          naughty.notify({text=titlebarbg})
+--          awful.titlebar(c, {
+--              bg_normal = titlebarbg,
+--              bg_focus  = titlebarbg
+--            }) : setup {
+--              { -- Left
+--                  awful.titlebar.widget.closebutton    (c),
+--                  awful.titlebar.widget.maximizedbutton(c),
+--                  awful.titlebar.widget.minimizebutton (c),
+--                  awful.titlebar.widget.stickybutton   (c),
+--                  --awful.titlebar.widget.ontopbutton    (c),
+--                  awful.titlebar.widget.floatingbutton (c),
+--                  layout = wibox.layout.fixed.horizontal()
+--              },
+--              { -- Middle
+--                  buttons = buttons,
+--                  layout  = wibox.layout.fixed.horizontal
+--              },
+--              { -- Right
+--                  { -- PID & Title tooltip
+--                      align  = "center",
+--                      widget = title_name
+--                  },
+--                  buttons = buttons,
+--                  layout  = wibox.layout.flex.horizontal
+--              },
+--              layout = wibox.layout.align.horizontal
+--          }
+--        end
+--      end)
+--    end
 end)
 
 -- Enable sloppy focus, so that focus follows mouse.
@@ -962,6 +1010,7 @@ autorunApps =
   "nextcloud",
   "fcitx",
   "quiterss",
+  "chromium --app=https://mail.google.com/mail/u/0/#inbox",
 }
 if autorun then
   for app = 1, #autorunApps do

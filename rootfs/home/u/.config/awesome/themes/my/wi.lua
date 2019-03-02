@@ -437,7 +437,7 @@ net_timer:connect_signal("timeout", function()
   vul                     = mytl.file_read("/sys/class/net/" .. tostring(interface) .. "/carrier", false)
   if vul == false or tonumber(vul) ~= 1 or (conn_type ~= 'wifi' and conn_type ~='ethernet') then 
     netimage:set_image(beautiful.net_off_ico)
-    netwidget_t.text      = 'offline'
+    netwidget_t.text      = 'Offline (dev:' .. tostring(interface) .. ', type:' .. tostring(conn_type) .. ')'
     last_conn_type        = ''
     awful.spawn.easy_async(getCmd, getNetConn)
     return false
@@ -789,7 +789,7 @@ temp_timer:connect_signal('timeout', function()
   temper          = tonumber(mytl.file_read('/sys/bus/platform/devices/coretemp.0/hwmon/hwmon1/temp1_input'))
   fans_c          = ''
   hwmon_num       = 1
-  while fans_c == '' or fans_c == false do
+  while fans_c == '' or fans_c == nil do
     fans_c        = mytl.file_read('/sys/bus/platform/devices/thinkpad_hwmon/hwmon/hwmon' .. hwmon_num .. '/fan1_input', false)
     hwmon_num     = hwmon_num + 1
     if hwmon_num >= 10 then

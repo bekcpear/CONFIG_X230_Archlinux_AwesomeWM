@@ -55,7 +55,7 @@ mytl.file_read = function(name, notify_err, read_mode)
   if (file[file_i] == nil or file_s[file_i] == nil) and notify_err then
     naughty.notify({title = "Read file err.", text = string.format("[%s] %s", tostring(file_err_no[file_i]), tostring(file_err[file_i])), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
   end
-  return false
+  return nil
 end
 -- a file reader End }}}
 
@@ -144,7 +144,7 @@ mytl.calcpuper = function(pid)
   local proccputi0, proccputi1, proccputi2, proccputi3  = string.match(mytl.file_read('/proc/' .. pid .. '/stat'), proccputireg)
   local proccputi_l = proccputi0 + proccputi1 + proccputi2 + proccputi3
   gears.timer.weak_start_new(2.8, function()
-    proccputi0, proccputi1, proccputi2, proccputi3  = string.match(mytl.file_read('/proc/' .. pid .. '/stat', false), proccputireg)
+    proccputi0, proccputi1, proccputi2, proccputi3  = string.match(tostring(mytl.file_read('/proc/' .. pid .. '/stat', false)), proccputireg)
     if proccputi0 == nil then
       return
     end

@@ -47,6 +47,7 @@ fcp /etc/sysctl.d
 fcp /etc/udev/rules.d
 fcp /etc/X11/xorg.conf.d
 fcp /etc/razer.conf
+fcp /etc/sddm.conf
 fcp /etc/iproute2/rt_tables
 fcp /home/u/.config/awesome
 fcp /home/u/.config/fcitx/skin
@@ -58,11 +59,13 @@ fcp /home/u/.config/kitty/kitty.conf
 fcp /home/u/.vimrc
 fcp /home/u/.Xresources
 fcp /home/u/.xinitrc
+fcp /home/u/.zsh
 fcp /home/u/.zshrc
 fcp /home/u/.zprofile
 fcp /opt/bin/\*.sh
 fcp /root/.vimrc
 fcp /root/.zshrc
+fcp /usr/share/sddm/themes/Starcraft
 fcp /lib/systemd/system/custom-startup.service
 fcp /lib/systemd/system/i3lock@.service
 fcp /lib/systemd/system/myresuming@.service
