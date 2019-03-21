@@ -4,17 +4,23 @@
 -- https://openweathermap.org/
 -------------------------------------------------
 -- Original url:
--- 	https://github.com/streetturtle/awesome-wm-widgets/blob/master/weather-widget/weather.lua
+--   https://github.com/streetturtle/awesome-wm-widgets/blob/master/weather-widget/weather.lua
 -- !!
 -- !! This is a modified version::
 -- !!
--- 	* Use breeze icons
--- 	* Add forecast (4 periods of time)
--- 	* support multiple cities
--- 	* use popup widget instead of notification to display
+--  * Use breeze icons
+--  * Add forecast (4 periods of time)
+--  * support multiple cities
+--  * use popup widget instead of notification to display
 --  * remove socket.http and use curl to get json data asynchronously
 --  * Modified by Bekcpear <i@ume.ink>
 --  * require lua-luajson package on Archlinux
+--
+--  ** Usage:
+--  **  Add following properties to theme, then require this module after theme
+--  **   theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"} -- or "Shanghai,CN" for sigle city
+--  **   theme.weather_widget_api_key                    = ""
+--  **   theme.weather_widget_units                      = "metric" -- or imperial
 -------------------------------------------------
 -------------------------------------------------
 
