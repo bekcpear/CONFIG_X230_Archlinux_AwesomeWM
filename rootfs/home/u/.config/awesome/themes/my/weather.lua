@@ -126,7 +126,7 @@ local function getResp(url, i, t)
                 respTD[2] = {}
                 respTD[3] = {}
                 respTD[4] = {}
-          if hour >= 0 and hour < 8 then
+          if hour >= 2 and hour < 8 then
             respTD[1][1] = date  .. " 00:00:00" -- UTC
             respTD[2][1] = date  .. " 06:00:00"
             respTD[3][1] = date  .. " 12:00:00"
@@ -144,7 +144,7 @@ local function getResp(url, i, t)
             respTD[2][2] = "今晚"
             respTD[3][2] = "今夜"
             respTD[4][2] = "明早"
-          elseif hour >= 14 and hour <= 23 then
+          elseif hour >= 14 and hour < 20 then
             respTD[1][1] = date  .. " 12:00:00"
             respTD[2][1] = date  .. " 18:00:00"
             respTD[3][1] = dateT .. " 00:00:00"
@@ -153,6 +153,15 @@ local function getResp(url, i, t)
             respTD[2][2] = "今夜"
             respTD[3][2] = "明早"
             respTD[4][2] = "明午"
+          elseif (hour >= 20 and hour <= 23) or (hour >= 0 and hour < 2) then
+            respTD[1][1] = date  .. " 18:00:00"
+            respTD[2][1] = dateT .. " 00:00:00"
+            respTD[3][1] = dateT .. " 06:00:00"
+            respTD[4][1] = dateT .. " 12:00:00"
+            respTD[1][2] = "今夜"
+            respTD[2][2] = "明早"
+            respTD[3][2] = "明午"
+            respTD[4][2] = "明晚"
           end
           local respJson = respT[i]
           respT[i] = {}
@@ -275,57 +284,59 @@ for i = 1, cities, 1 do
         },
       }
       for k = 1, #respT[i] do
-        weather_pop_inner[#weather_pop_inner + 1] = {
-          {
+        if respT[i][k] ~= nil then
+          weather_pop_inner[#weather_pop_inner + 1] = {
             {
-              markup = '<small><b>' .. respT[i][k].dt_txt_c .. '</b></small>',
-              align  = 'right',
-              valign = 'center',
-              forced_width = 20,
-              forced_height = 20,
-              widget = wibox.widget.textbox
+              {
+                markup = '<small><b>' .. respT[i][k].dt_txt_c .. '</b></small>',
+                align  = 'right',
+                valign = 'center',
+                forced_width = 20,
+                forced_height = 20,
+                widget = wibox.widget.textbox
+              },
+              top = 0,
+              right = 0,
+              bottom = 0,
+              left = 10,
+              layout  = wibox.container.margin,
             },
-            top = 0,
-            right = 0,
-            bottom = 0,
-            left = 10,
-            layout  = wibox.container.margin,
-          },
-          {
             {
-              image  = path_to_icons .. icon_map[respT[i][k].weather[1].icon],
-              resize = true,
-              forced_width = 20,
-              forced_height = 20,
-              widget = wibox.widget.imagebox
+              {
+                image  = path_to_icons .. icon_map[respT[i][k].weather[1].icon],
+                resize = true,
+                forced_width = 20,
+                forced_height = 20,
+                widget = wibox.widget.imagebox
+              },
+              top = 0,
+              right = 5,
+              bottom = 0,
+              left = 5,
+              layout = wibox.container.margin,
             },
-            top = 0,
-            right = 5,
-            bottom = 0,
-            left = 5,
-            layout = wibox.container.margin,
-          },
-          {
             {
-              markup = '<span size="large"><b>'
-                        .. respT[i][k].weather[1].description
-                        .. ' ' .. respT[i][k].main.temp .. '°'
-                        .. (beautiful.weather_widget_units == 'metric' and 'C' or 'F')
-                        .. '</b></span>',
-              align  = 'left',
-              valign = 'center',
-              forced_width = 160,
-              forced_height = 20,
-              widget = wibox.widget.textbox
+              {
+                markup = '<span size="large"><b>'
+                          .. respT[i][k].weather[1].description
+                          .. ' ' .. respT[i][k].main.temp .. '°'
+                          .. (beautiful.weather_widget_units == 'metric' and 'C' or 'F')
+                          .. '</b></span>',
+                align  = 'left',
+                valign = 'center',
+                forced_width = 160,
+                forced_height = 20,
+                widget = wibox.widget.textbox
+              },
+              top = 0,
+              right = 0,
+              bottom = 0,
+              left = 0,
+              layout  = wibox.container.margin,
             },
-            top = 0,
-            right = 0,
-            bottom = 0,
-            left = 0,
-            layout  = wibox.container.margin,
-          },
-          layout = wibox.layout.fixed.horizontal
-        }
+            layout = wibox.layout.fixed.horizontal
+          }
+        end
       end
       weather_pop_inner[#weather_pop_inner + 1] = {
         {
