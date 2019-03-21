@@ -21,6 +21,7 @@
 --  **   theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"} -- or "Shanghai,CN" for sigle city
 --  **   theme.weather_widget_api_key                    = ""
 --  **   theme.weather_widget_units                      = "metric" -- or imperial
+--  ** the forecast configuration is now for UTC+8/9/10 only
 -------------------------------------------------
 -------------------------------------------------
 
@@ -114,7 +115,7 @@ local function getResp(url, i, t)
         if respT[i].cod ~= "200" then
           naughty.notify({title = "Get forecase data error", text = string.format("Error data, status code: %s", respT[i].cod), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
         else
-          local hour  = tonumber(os.date("%H"))
+          local hour  = tonumber(os.date("%H")) -- CST
           local date  = os.date("%Y-%m-%d")
           local dateT = os.date("%Y-%m-%d",
                           os.time{year=os.date("%Y"),
@@ -125,29 +126,29 @@ local function getResp(url, i, t)
                 respTD[2] = {}
                 respTD[3] = {}
                 respTD[4] = {}
-          if hour >= 0 and hour < 9 then
-            respTD[1][1] = date  .. " 09:00:00"
-            respTD[2][1] = date  .. " 15:00:00"
-            respTD[3][1] = date  .. " 21:00:00"
-            respTD[4][1] = dateT .. " 03:00:00"
+          if hour >= 0 and hour < 8 then
+            respTD[1][1] = date  .. " 00:00:00" -- UTC
+            respTD[2][1] = date  .. " 06:00:00"
+            respTD[3][1] = date  .. " 12:00:00"
+            respTD[4][1] = date  .. " 18:00:00"
             respTD[1][2] = "今早"
             respTD[2][2] = "今午"
             respTD[3][2] = "今晚"
             respTD[4][2] = "今夜"
-          elseif hour >= 9 and hour < 15 then
-            respTD[1][1] = date  .. " 15:00:00"
-            respTD[2][1] = date  .. " 21:00:00"
-            respTD[3][1] = dateT .. " 03:00:00"
-            respTD[4][1] = dateT .. " 09:00:00"
+          elseif hour >= 8 and hour < 14 then
+            respTD[1][1] = date  .. " 06:00:00"
+            respTD[2][1] = date  .. " 12:00:00"
+            respTD[3][1] = date  .. " 18:00:00"
+            respTD[4][1] = dateT .. " 00:00:00"
             respTD[1][2] = "今午"
             respTD[2][2] = "今晚"
             respTD[3][2] = "今夜"
             respTD[4][2] = "明早"
-          elseif hour >= 15 and hour <= 23 then
-            respTD[1][1] = date  .. " 21:00:00"
-            respTD[2][1] = dateT .. " 03:00:00"
-            respTD[3][1] = dateT .. " 09:00:00"
-            respTD[4][1] = dateT .. " 15:00:00"
+          elseif hour >= 14 and hour <= 23 then
+            respTD[1][1] = date  .. " 12:00:00"
+            respTD[2][1] = date  .. " 18:00:00"
+            respTD[3][1] = dateT .. " 00:00:00"
+            respTD[4][1] = dateT .. " 06:00:00"
             respTD[1][2] = "今晚"
             respTD[2][2] = "今夜"
             respTD[3][2] = "明早"
@@ -227,7 +228,7 @@ for i = 1, cities, 1 do
   local weather_pop
   local popuped = false
   weather_widget[i]:connect_signal("mouse::enter", function()
-    if popuped == false then
+    if popuped == false and resp ~= nil and respT[i] ~= nil then
       popuped = true
       local weather_pop_inner = {
         {
@@ -361,7 +362,9 @@ for i = 1, cities, 1 do
   end)
 
   weather_widget[i]:connect_signal("mouse::leave", function()
-    weather_pop.visible = false
+    if weather_pop ~= nil then
+      weather_pop.visible = false
+    end
     weather_pop = nil
     popuped = false
   end)
