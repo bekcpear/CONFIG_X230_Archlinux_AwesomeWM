@@ -1,7 +1,7 @@
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=100000
+SAVEHIST=100000
 bindkey -v
 KEYTIMEOUT=1
 # End of lines configured by zsh-newuser-install
@@ -36,3 +36,8 @@ source ~/.zsh/ykman
 #alias yd="~/cc/ydcv.sh"
 alias yd="ydcv"
 alias pb="/home/u/cc/vimcnpaste.sh"
+
+export GPG_TTY="$(tty)"
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+gpg-connect-agent updatestartuptty /bye > /dev/null
+

@@ -6,7 +6,7 @@ set fileencodings=utf-8,ucs-bom,gbk,default,latin1
 set backupdir=~/.vimbak
 set ts=2
 set sw=2
-set expandtab
+"set expandtab
 
 set autoindent
 set smartindent

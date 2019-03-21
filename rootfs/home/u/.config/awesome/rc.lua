@@ -49,6 +49,7 @@ beautiful.init("/home/u/.config/awesome/themes/my/theme.lua")
 local mywi  = require("themes.my.wi")
 local myhok = require("themes.my.hok")
 local mytl  = require("themes.my.tl")
+local weth  = require("themes.my.weather")
 
 -- This is used later as the default terminal and editor to run.
 terminal    = "urxvt"
@@ -277,7 +278,7 @@ awful.screen.connect_for_each_screen(function(s)
     gears.timer({timeout = beautiful.wallpaper_switch_time, autostart = true, callback = function() set_wallpaper(s) end})
 
     -- Each screen has its own tag table.
-    awful.tag({ "Nor", "Ext", "Stt", "Mzx", "Sur", "Mai", "Des", "Dei", "Soc", "10", "11" }, s, awful.layout.layouts[1])
+    awful.tag({ "1.N", "2.E", "3.S", "4.M", "5.S", "6.O", "7.X", "8.Y", "9.S", "10.", "11." }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -429,6 +430,8 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             wibox.widget.systray(),
             mywi.separator,
+            weth,
+            mywi.separator_empty,
             mywi.tempgraph,
             mywi.separator_empty,
             mywi.cpuubar,
@@ -502,15 +505,21 @@ globalkeys = gears.table.join(
     ),
     awful.key({ modkey, "Control" }, "l",
         function ()
+            myhok.cright()
+        end,
+        {description = "make focused client right", group = "client"}
+    ),
+    awful.key({ modkey, "Control" }, "h",
+        function ()
             myhok.cleft()
         end,
         {description = "make focused client left", group = "client"}
     ),
-    awful.key({ modkey, "Control" }, "h",
+    awful.key({ modkey, "Control" }, "m",
         function ()
-            myhok.cright()
+            myhok.ccorner()
         end,
-        {description = "make focused client right", group = "client"}
+        {description = "make focused client right-bottom", group = "client"}
     ),
     awful.key({ modkey,           }, "w", function () powermenu:show() end,
               {description = "show power menu", group = "awesome"}),
@@ -790,10 +799,10 @@ awful.rules.rules = {
 
     -- Set to always map on the tag named "Mai".
     { rule = { instance = "^mail%.google%.com.+" },
-      properties = { tag = "Mai", maximized = false, floating = false} },
+      properties = { tag = "6.O", maximized = false, floating = false} },
     -- Set to always map on the tag named "Soc".
     { rule = { class = "Telegram" },
-      properties = { tag = "Soc", maximized = false } },
+      properties = { tag = "9.S", maximized = false } },
 
     -- Set transparent
     { rule_any = {
@@ -808,6 +817,9 @@ awful.rules.rules = {
     },
     { rule = {class = "netease-cloud-music", type = "utility"},
       properties = { sticky = true },
+    },
+    { rule = {class = "xpad"},
+      properties = { skip_taskbar = true, floating = true },
     },
     { rule_any = {
         class = {
@@ -844,7 +856,12 @@ client.connect_signal("manage", function (c)
       local ctag = c.first_tag
       tagFirTers[ctag.index] = true
       c.floating = true
-      c:geometry({x = c.screen.geometry['width'] / 2 - 200 + c.screen.geometry['x'], y = c.screen.geometry['height'] / 2 - 180 + c.screen.geometry['y'], width = c.screen.geometry['width'] / 2 + 80, height = c.screen.geometry['height'] / 2 + 100})
+      c:geometry({
+        x = c.screen.geometry['width'] / 2 - 200 + c.screen.geometry['x'],
+        y = c.screen.geometry['height'] / 2 - 180 + c.screen.geometry['y'],
+        width = c.screen.geometry['width'] / 2 + 80,
+        height = c.screen.geometry['height'] / 2 + 100
+      })
       c:connect_signal("unmanage", function ()
         tagFirTers[ctag.index] = nil
       end)
@@ -916,6 +933,16 @@ client.connect_signal("request::titlebars", function(c)
     local titlebarbg = beautiful.titlebar_bg_normal
     if c.name and string.find(c.name, 'Cloud%sMusic$') ~= nil then -- for Netease Cloud Music Black Theme
       titlebarbg = "#222225"
+    elseif c.class and c.class == 'Alacritty' or c.class == 'URxvt' then
+      titlebarbg = "#373737"
+    elseif c.class and c.class == 'Code' then
+      titlebarbg = "#dddddd"
+    elseif c.class and c.class == 'TelegramDesktop' then
+      titlebarbg = "#ffffff"
+    elseif c.instance and string.find(c.instance, '^mail%.google%.com') ~= nil then
+      titlebarbg = "#ffffff"
+    elseif c.class and c.class == 'xpad' then
+      return
     end
     awful.titlebar(c, {
         bg_normal = titlebarbg,
@@ -1010,7 +1037,8 @@ autorunApps =
   "nextcloud",
   "fcitx",
   "quiterss",
-  "chromium --app=https://mail.google.com/mail/u/0/#inbox",
+  "chromium --proxy-server=socks://127.0.0.1:1080 --app=https://mail.google.com/mail/u/0/#inbox",
+  "xpad --show",
 }
 if autorun then
   for app = 1, #autorunApps do

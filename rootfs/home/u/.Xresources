@@ -67,8 +67,8 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 
 ! --- special colors ---
 
-*background: #000000
-*foreground: #ffffff
+*background: #373737
+*foreground: #fafafa
 
 ! --- standard colors ---
 
@@ -76,46 +76,46 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 *color0: #000000
 
 ! bright_black
-*color8: #464646
+*color8: #616161
 
 ! red
-*color1: #d14a40
+*color1: #ff9e80
 
 ! bright_red
-*color9: #eaaba7
+*color9: #ff3d00
 
 ! green
-*color2: #40d14a
+*color2: #b9f6ca
 
 ! bright_green
-*color10: #a7eaab
+*color10: #00e676
 
 ! yellow
-*color3: #c7d140
+*color3: #ffff8d
 
 ! bright_yellow
-*color11: #e5eaa7
+*color11: #ffea00
 
 ! blue
-*color4: #4a40d1
+*color4: #82b1ff
 
 ! bright_blue
-*color12: #aba7ea
+*color12: #2979ff
 
 ! magenta
-*color5: #d140c7
+*color5: #c397d8
 
 ! bright_magenta
-*color13: #eaa7e5
+*color13: #b77ee0
 
 ! cyan
-*color6: #40c7d1
+*color6: #84ffff
 
 ! bright_cyan
-*color14: #a7e5ea
+*color14: #00e5ff
 
 ! white
-*color7: #d9d9d9
+*color7: #fafafa
 
 ! bright_white
 *color15: #ffffff
@@ -360,9 +360,9 @@ URxvt*cursorColor2   : #abcdef
 !!!!Scheme 0 E n d -----------
 
 !URxvt*font: xft:DejaVu Sans Mono for Powerline:antialias=True:pixelsize=14,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=14
-URxvt*font: xft:Source Code Pro for Powerline:antialias=True:pixelsize=13,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=13
+URxvt*font: xft:Source Code Pro for Powerline:antialias=True:pixelsize=16,xft:Noto Sans Mono CJK SC:style=regular:antialias=True:pixelsize=16
 URxvt*depth: 32
-URxvt*background: rgba:0000/0000/0000/cc00
+!URxvt*background: rgba:0000/0000/0000/cc00
 !URxvt*transparent: true
 !URxvt*tintColor: #000000
 !URxvt*shading: 30

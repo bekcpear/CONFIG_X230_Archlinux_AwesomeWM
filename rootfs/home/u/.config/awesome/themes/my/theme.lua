@@ -9,7 +9,7 @@ theme.dir                                       = os.getenv("HOME") .. "/.config
 
 theme.wallpaper                                 = theme.dir .. "/wall.png"
 theme.wallpaper_dir                             = theme.dir .. "/wall_dir"
-theme.wallpaper_switch_time                     = 1800 -- seconds
+theme.wallpaper_switch_time                     = 3600 -- seconds
 theme.wallpaper_fade                            = true
 
 -- {{{ comment below to disable day/night wallpapers
@@ -18,6 +18,14 @@ theme.wallpaper_dir_night                       = theme.dir .. "/wall_dir_night"
 theme.wallpaper_day_h_s                         = 7   --  daytime start hour for wallpaper
 theme.wallpaper_night_h_s                       = 17  --  night start hour for wallpaper
 -- }}}
+
+-- {{{ for weather plugin Start
+                                                  -- string for single city
+                                                  -- table for cities
+theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"}
+theme.weather_widget_api_key                    = ""
+theme.weather_widget_units                      = "metric" -- or imperial
+-- for weather plugin End }}}
 
 theme.font                                      = "DejaVu Sans Mono 8"
 

@@ -19,6 +19,7 @@
     * 存在 PID 的窗口显示其 PID ，其 Resident Set Size 以及其 CPU 使用率（子進程未計算）
     * 每個標籤下使用快捷鍵打開的第一個終端窗口浮動，且靠右下方顯示，之後終端正常佈局；當對應標籤下第一個默認浮動的終端被關閉後，下次打開的第一個終端窗口默認浮動
     * 系統托盤區顯示整個系統的 CPU 使用率
+    * 一个支持多城市显示的天气插件
     * 更多自定義快捷鍵，Mod + s 查看，支持 Mod + l/h 浮動窗口放大縮小
 
   * 注：文件 `/usr/share/awesome/lib/awful/widget/button.lua` 下有一个修改（調節按下按鈕後的偏移距離）
@@ -59,7 +60,9 @@
 
 After 190201:
 
-![screenshot0](screenshot2.png)
+![screenshot2](screenshot2.png)
+
+![screenshot3-weather](screenshot3.png)
 
 Before 180201:
 

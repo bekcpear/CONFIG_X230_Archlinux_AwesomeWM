@@ -72,8 +72,8 @@ myhok.ccenter = function()
 end
 -- make focused client center End }}}
 
--- {{{ make focused client left Start
-myhok.cleft = function()
+-- {{{ make focused client right Start
+myhok.cright = function()
   local c = client.focus
   if c then
     if not c.fullscreen then
@@ -91,10 +91,10 @@ myhok.cleft = function()
     end
   end
 end
--- make focused client left End }}}
+-- make focused client right End }}}
 
--- {{{ make focused client right Start
-myhok.cright = function()
+-- {{{ make focused client left Start
+myhok.cleft = function()
   local c = client.focus
   if c then
     if not c.fullscreen then
@@ -112,7 +112,27 @@ myhok.cright = function()
     end
   end
 end
--- make focused client right End }}}
+-- make focused client left End }}}
+
+-- {{{ make focused client right-bottom Start
+myhok.ccorner = function()
+  local c = client.focus
+  if c then
+    if not c.fullscreen then
+      c.maximized = false
+      c.maximized_vertical = false
+      c.maximized_horizontal = false
+      c.floating = true
+      c:geometry({
+        x      = c.screen.geometry['width'] / 2 - 200 + c.screen.geometry['x'],
+        y      = c.screen.geometry['height'] / 2 - 180 + c.screen.geometry['y'],
+        width  = c.screen.geometry['width'] / 2 + 80,
+        height = c.screen.geometry['height'] / 2 + 100
+      })
+    end
+  end
+end
+-- make focused client right-bottom End }}}
 
 
 -- {{ increase/decrease floating client size Start

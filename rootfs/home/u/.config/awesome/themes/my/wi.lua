@@ -428,7 +428,7 @@ mywi.netwidget:connect_signal('mouse::leave', function()
   netwidgethoverinit0     = false
   netwidgethoverinit1     = false
 end)
-local vul, signal, bitrate
+local vul, signal, rxbitrate, txbitrate
 net_timer:connect_signal("timeout", function()
   if (not netwidgethoverinit0 or netwidgethover) and not netwidgethoverinit1 and not netwidgethoverinit2 then
     netwidgethoverinit0   = true
@@ -451,8 +451,8 @@ net_timer:connect_signal("timeout", function()
         netwidgethoverinit1 = true
         awful.spawn.easy_async(iw .. ' dev ' .. interface .. ' link', function(stdout, stderr, reason, exit_code)
           if exit_code == 0 then
-            signal, bitrate       = string.match(stdout, "signal:%s+([%d.-]+%s+%a+)[\r\n]*%s+tx%s+bitrate:%s+([%d.]+%s+[%a/]+)")
-            netwidget_t.text      = tostring(conn_name) .. ' (' .. tostring(conn_type) .. ', ' .. tostring(interface) .. ')\nsignal: ' .. tostring(signal) ..', bitrate: ' .. tostring(bitrate)
+            signal, rxbitrate, txbitrate = string.match(stdout, "signal:%s+([%d%.%-]+%s+%a+)[\r\n]*%s+rx%s+bitrate:%s+([%d%.]+%s+[%a/]+).+[\r\n]*%s+tx%s+bitrate:%s+([%d%.]+%s+[%a/]+)")
+            netwidget_t.text = tostring(conn_name) .. ' (' .. tostring(conn_type) .. ', ' .. tostring(interface) .. ')\nsignal: ' .. tostring(signal) ..', bitrate: ' .. tostring(rxbitrate) .. '(RX) ' .. tostring(txbitrate) .. '(TX)'
           else
             naughty.notify({title = "Get wireless signle strength err.", text = string.format("Exec: %s error, status: %s, %s, stderr: %s", iw .. ' dev ' .. interface .. ' link', exit_code, reason, stderr), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
           end

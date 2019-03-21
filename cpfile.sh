@@ -47,6 +47,7 @@ fcp /etc/sysctl.d
 fcp /etc/udev/rules.d
 fcp /etc/X11/xorg.conf.d
 fcp /etc/razer.conf
+fcp /etc/pacman.conf
 fcp /etc/sddm.conf
 fcp /etc/iproute2/rt_tables
 fcp /home/u/.config/awesome
@@ -73,3 +74,7 @@ fcp /lib/systemd/system/openconnect@.service
 fcp /lib/systemd/system/net-checker@.service
 fcp /lib/systemd/system/nmcontrol.service
 fcp /home/u/.local/share/applications/netease-musicbox.desktop
+
+
+sed -i 's/theme\.weather_widget_city.*/theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"}/' ./rootfs/home/u/.config/awesome/themes/my/theme.lua
+sed -i 's/theme\.weather_widget_api_key.*/theme.weather_widget_api_key                    = ""/' ./rootfs/home/u/.config/awesome/themes/my/theme.lua
