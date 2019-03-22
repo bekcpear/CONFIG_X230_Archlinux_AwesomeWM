@@ -118,7 +118,6 @@ local function prepare_context(s)
     cr:translate(geom.x, geom.y)
     cr:rectangle(0, 0, geom.width, geom.height)
     cr:clip()
-    last_cario = cr
 
     return geom, cr
 end
@@ -145,13 +144,15 @@ end
 -- @param s The screen whose wallpaper should be set. Can be nil, in which case
 --   all screens are set.
 -- @factor the transparency, from 0.0 to 1.0
-local function maximized(surf, s, factor)
+local msurf = nil
+local function maximized(original_surf, s, factor)
     local geom, cr = prepare_context(s)
-    local original_surf = surf
-    surf = surface.load_uncached(surf)
+    if msurf == nil then
+        msurf = surface.load_uncached(original_surf)
+    end
 
     -- scale the new source surface to fill the screen
-    local w, h = surface.get_size(surf)
+    local w, h = surface.get_size(msurf)
     local aspect_w = geom.width / w
     local aspect_h = geom.height / h
     aspect_h = math.max(aspect_w, aspect_h)
@@ -162,12 +163,9 @@ local function maximized(surf, s, factor)
     cr:translate((scaled_width - w) / 2, (scaled_height - h) / 2)
 
     -- Draw new wallpaper according to transparency
-    cr:set_source_surface(surf, 0, 0)
+    cr:set_source_surface(msurf, 0, 0)
     cr.operator = cairo.Operator.SOURCE
     cr:paint_with_alpha(factor)
-    if surf ~= original_surf then
-        surf:finish()
-    end
     if cr.status ~= "SUCCESS" then
         debug.print_warning("Cairo context entered error state: " .. cr.status)
     end
@@ -222,6 +220,8 @@ function smoothwp.fade(wpath, s)
         if steps_done / steps == 1 then
             last_source = nil
             asindex = -1
+            msurf:finish()
+            msurf = nil
             wpath, s = pullFade()
             if wpath ~= nil and s ~= nil then
                 smoothwp.fade(wpath, s)

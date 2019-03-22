@@ -32,11 +32,10 @@ end
 -- Show brightness End }}}
 
 -- toggle MIC mute
+local mic_id, mic_name, l_mic_id, l_mic_name, l_mic_stat, l_mic_class
 myhok.micmutetoggle = function()
   awful.spawn.easy_async('pactl list sources', function(stdout, stderr, reason, exit_code)
     if exit_code == 0 then
-      local i       = 0
-      local mic_id, mic_name, l_mic_id, l_mic_name, l_mic_stat, l_mic_class
       for l_mic_id, l_mic_name, l_mic_stat, l_mic_class in string.gmatch(stdout, '[\n\r]*Source%s+#(%d+).-%s+Name:%s+([%a%d%.%-_]+).-%s+Mute:%s+(%a+).-%s+device%.class%s+=%s+"(%a+)') do
         if l_mic_class == 'sound' then
           mic_id    = l_mic_id
@@ -52,9 +51,10 @@ myhok.micmutetoggle = function()
 end
 -- Volume widget End }}}
 
+local c
 -- {{{ make focused client center Start
 myhok.ccenter = function()
-  local c = client.focus
+  c = client.focus
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -74,7 +74,7 @@ end
 
 -- {{{ make focused client right Start
 myhok.cright = function()
-  local c = client.focus
+  c = client.focus
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -95,7 +95,7 @@ end
 
 -- {{{ make focused client left Start
 myhok.cleft = function()
-  local c = client.focus
+  c = client.focus
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -116,7 +116,7 @@ end
 
 -- {{{ make focused client right-bottom Start
 myhok.ccorner = function()
-  local c = client.focus
+  c = client.focus
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -136,12 +136,12 @@ end
 
 
 -- {{ increase/decrease floating client size Start
+local orx, ory, orwidth, orheight, cratio, diffi
 myhok.resfloatcli = function(inc)
-  local c = client.focus
+  c = client.focus
   if c and c.floating and not c.fullscreen and not c.maximized and not c.maximized_vertical and not c.maximized_horizontal then
-    local orx, ory, orwidth, orheight = c.x, c.y, c.width, c.height
-    local cratio = orheight / orwidth
-    local diffi
+    orx, ory, orwidth, orheight = c.x, c.y, c.width, c.height
+    cratio = orheight / orwidth
     if inc then
       diffi = 50
     else

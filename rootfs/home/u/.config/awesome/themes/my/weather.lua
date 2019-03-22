@@ -57,30 +57,30 @@ local icon_map = {
 }
 
 --- Return wind direction as a string.
+local directions = {
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
+    "N",
+}
 local function to_direction(degrees)
     -- Ref: https://www.campbellsci.eu/blog/convert-wind-directions
     if degrees == nil then
         return "风向未知"
     end
-    local directions = {
-        "N",
-        "NNE",
-        "NE",
-        "ENE",
-        "E",
-        "ESE",
-        "SE",
-        "SSE",
-        "S",
-        "SSW",
-        "SW",
-        "WSW",
-        "W",
-        "WNW",
-        "NW",
-        "NNW",
-        "N",
-    }
     return directions[math.floor((degrees % 360) / 22.5) + 1]
 end
 
@@ -96,10 +96,12 @@ end
 local lastUpdate
 local resp = {}
 local respT = {}
+local respTD = {}
 local weather_widget = {}
 local weather_timer = {}
 local weather_emit_timer = {}
 
+local hour, date, dateT, respJson
 local function getResp(url, i, t)
   awful.spawn.easy_async("curl '" .. url .. "'", function(stdout, stderr, reason, exit_code)
     if exit_code == 0 then
@@ -115,17 +117,17 @@ local function getResp(url, i, t)
         if respT[i].cod ~= "200" then
           naughty.notify({title = "Get forecase data error", text = string.format("Error data, status code: %s", respT[i].cod), timeout = 0, fg = beautiful.taglist_fg_focus, bg = beautiful.bg_urgent, border_color = beautiful.bg_urgent})
         else
-          local hour  = tonumber(os.date("%H")) -- CST
-          local date  = os.date("%Y-%m-%d")
-          local dateT = os.date("%Y-%m-%d",
+          hour  = tonumber(os.date("%H")) -- CST
+          date  = os.date("%Y-%m-%d")
+          dateT = os.date("%Y-%m-%d",
                           os.time{year=os.date("%Y"),
                                   month=os.date("%m"),
                                   day=os.date("%d") + 1})
-          local respTD    = {}
-                respTD[1] = {}
-                respTD[2] = {}
-                respTD[3] = {}
-                respTD[4] = {}
+          respTD    = {}
+          respTD[1] = {}
+          respTD[2] = {}
+          respTD[3] = {}
+          respTD[4] = {}
           if hour >= 2 and hour < 8 then
             respTD[1][1] = date  .. " 00:00:00" -- UTC
             respTD[2][1] = date  .. " 06:00:00"
@@ -163,7 +165,7 @@ local function getResp(url, i, t)
             respTD[3][2] = "明午"
             respTD[4][2] = "明晚"
           end
-          local respJson = respT[i]
+          respJson = respT[i]
           respT[i] = {}
           for j = 1, 30, 1 do
             if respJson.list[j].dt_txt == respTD[1][1] then
@@ -198,6 +200,7 @@ local function myplacementforvolpopup(p, sg)
   p:geometry({x=sx + sw - pw - 150, y=21, width=pw, height=ph})
 end
 
+local url
 for i = 1, cities, 1 do
   city[i] = city[i] ~= nil and city[i] or beautiful.weather_widget_city[i]
   weather_widget[i] = wibox.widget {
@@ -214,12 +217,12 @@ for i = 1, cities, 1 do
 
   weather_timer[i] = gears.timer({ timeout = 600 })
   weather_timer[i]:connect_signal("timeout", function ()
-      local url = 'https://api.openweathermap.org/data/2.5/weather?lang=zh_cn&q='
+      url = 'https://api.openweathermap.org/data/2.5/weather?lang=zh_cn&q='
               .. city[i]
               .. '&appid=' .. beautiful.weather_widget_api_key
               .. '&units=' .. beautiful.weather_widget_units
       getResp(url, i, 0)
-      local url = 'https://api.openweathermap.org/data/2.5/forecast?lang=zh_cn&q='
+      url = 'https://api.openweathermap.org/data/2.5/forecast?lang=zh_cn&q='
               .. city[i]
               .. '&appid=' .. beautiful.weather_widget_api_key
               .. '&units=' .. beautiful.weather_widget_units
@@ -234,12 +237,12 @@ for i = 1, cities, 1 do
   weather_emit_timer[i]:start()
 
   --- Notification with weather information. Popups when mouse hovers over the icon
-  local weather_pop
+  local weather_pop, weather_pop_inner
   local popuped = false
   weather_widget[i]:connect_signal("mouse::enter", function()
     if popuped == false and resp ~= nil and respT[i] ~= nil then
       popuped = true
-      local weather_pop_inner = {
+      weather_pop_inner = {
         {
           {
             {

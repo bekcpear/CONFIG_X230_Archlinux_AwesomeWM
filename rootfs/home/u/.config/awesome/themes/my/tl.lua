@@ -131,6 +131,7 @@ end)
 --wholecputi_timer1:connect_signal("timeout", function() wholecputi_get() end)
 --wholecputi_timer0:emit_signal("timeout")
 local proccputi_lx = 0
+local proccputireg = '[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s([^%s]+)%s([^%s]+)%s([^%s]+)%s([^%s]+)%s'
 mytl.calcpuper = function(pid)
   -- 計算方法：
   -- 獲取當前進程被分配到的總 Clock Ticks，這裏獲取到的 ticks 是被當前系統設定的每秒觸發的 Clock Ticks 所整除的
@@ -140,7 +141,6 @@ mytl.calcpuper = function(pid)
   -- 而 Clock Tick 的觸發是由 PIT 通道 0 計數器減到 0 的時候觸發的，具體真實時間根據 CPU 時鐘週期來定，不用特別理會
   -- 同樣的，因爲多核 CPU 有多個線程，所以 CPU 使用率能出現超過 100% 的情況，具體最高能到多少由 CPU 線程數決定，比如四核 CPU 可以到 400%
   -- TODO: calculate all child processes' cpu useage
-  local proccputireg = '[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s[^%s]+%s([^%s]+)%s([^%s]+)%s([^%s]+)%s([^%s]+)%s'
   local proccputi0, proccputi1, proccputi2, proccputi3  = string.match(mytl.file_read('/proc/' .. pid .. '/stat'), proccputireg)
   local proccputi_l = proccputi0 + proccputi1 + proccputi2 + proccputi3
   gears.timer.weak_start_new(2.8, function()

@@ -856,17 +856,18 @@ local wholecputi_w0    = 0    -- warning 0 stage counter
 local wholecputi_w1    = 0    -- warning 1 stage counter
 local wholecputi_l     = 0
 local wholecputi_timer = gears.timer({ timeout = 3 })
+local wocti0, wocti1, wocti2, wocti3, wocti4, wocti5, wocti6, wocti7, wocti8, wholecputi, wholecputi_d, usePerc
 wholecputi_timer:start()
 wholecputi_timer:connect_signal("timeout", function()
-  local wocti0, wocti1, wocti2, wocti3, wocti4, wocti5, wocti6, wocti7, wocti8 = string.match(mytl.file_read('/proc/stat'), '(%d+)%s(%d+)%s(%d+)%s%d+%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)')
-  local wholecputi   = wocti0 + wocti1 + wocti2 + wocti3 + wocti4 + wocti5 + wocti6 + wocti7 + wocti8
-  local wholecputi_d = wholecputi - wholecputi_l
+  wocti0, wocti1, wocti2, wocti3, wocti4, wocti5, wocti6, wocti7, wocti8 = string.match(mytl.file_read('/proc/stat'), '(%d+)%s(%d+)%s(%d+)%s%d+%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)%s(%d+)')
+  wholecputi   = wocti0 + wocti1 + wocti2 + wocti3 + wocti4 + wocti5 + wocti6 + wocti7 + wocti8
+  wholecputi_d = wholecputi - wholecputi_l
   wholecputi_l       = wholecputi
   if wholecputi_ii then
     wholecputi_ii = false
     return
   end
-  local usePerc      = wholecputi_d / 3.012 / mytl.clockTicks * 100
+  usePerc      = wholecputi_d / 3.012 / mytl.clockTicks * 100
   cpuubarC.values    = {usePerc}
   cpuubarC.max_value = mytl.clockTicks * mytl.cpun
   if usePerc / mytl.clockTicks / mytl.cpun > 0.6 then

@@ -921,6 +921,7 @@ client.connect_signal("request::titlebars", function(c)
             cpuu = "--"
           end
           title_name:set_text(string.format('CPU: %s | RSS: %s | PID: %s ', cpuu, mytl.getrss(pid), tostring(pid)))
+          cpuu = nil
         end
       }
       client_info_timer:emit_signal('timeout')
