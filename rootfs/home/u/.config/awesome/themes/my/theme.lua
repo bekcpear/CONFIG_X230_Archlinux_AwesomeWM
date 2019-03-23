@@ -22,7 +22,7 @@ theme.wallpaper_night_h_s                       = 17  --  night start hour for w
 -- {{{ for weather plugin Start
                                                   -- string for single city
                                                   -- table for cities
-theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"}
+theme.weather_widget_city                       = {"Wuxi,CN", "Shenzhen,CN"}
 theme.weather_widget_api_key                    = ""
 theme.weather_widget_units                      = "metric" -- or imperial
 -- for weather plugin End }}}

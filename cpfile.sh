@@ -76,5 +76,5 @@ fcp /lib/systemd/system/nmcontrol.service
 fcp /home/u/.local/share/applications/netease-musicbox.desktop
 
 
-sed -i 's/theme\.weather_widget_city.*/theme.weather_widget_city                       = {"Shanghai,CN", "Shenzhen,CN"}/' ./rootfs/home/u/.config/awesome/themes/my/theme.lua
+sed -i 's/theme\.weather_widget_city.*/theme.weather_widget_city                       = {"Wuxi,CN", "Shenzhen,CN"}/' ./rootfs/home/u/.config/awesome/themes/my/theme.lua
 sed -i 's/theme\.weather_widget_api_key.*/theme.weather_widget_api_key                    = ""/' ./rootfs/home/u/.config/awesome/themes/my/theme.lua
