@@ -1032,6 +1032,7 @@ end)
 
 -- Autorun programs
 autorun = true
+--autorun = false
 autorunApps =
 {
   --"LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud",

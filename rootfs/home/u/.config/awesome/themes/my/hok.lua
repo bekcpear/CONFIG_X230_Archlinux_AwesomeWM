@@ -51,10 +51,11 @@ myhok.micmutetoggle = function()
 end
 -- Volume widget End }}}
 
-local c
+local c, fs
 -- {{{ make focused client center Start
 myhok.ccenter = function()
   c = client.focus
+  fs = awful.screen.focused()
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -62,10 +63,10 @@ myhok.ccenter = function()
       c.maximized_horizontal = false
       c.floating = true
       c:geometry({
-        x      = c.screen.geometry['x'] + c.screen.geometry['width'] / 7,
-        y      = c.screen.geometry['y'] + c.screen.geometry['height'] / 6,
-        width  = c.screen.geometry['width'] / 7 * 5,
-        height = c.screen.geometry['height'] / 6 * 4,
+        x      = fs.geometry['x'] + fs.geometry['width'] / 7,
+        y      = fs.geometry['y'] + fs.geometry['height'] / 6,
+        width  = fs.geometry['width'] / 7 * 5,
+        height = fs.geometry['height'] / 6 * 4,
       })
     end
   end
@@ -75,6 +76,7 @@ end
 -- {{{ make focused client right Start
 myhok.cright = function()
   c = client.focus
+  fs = awful.screen.focused()
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -82,10 +84,10 @@ myhok.cright = function()
       c.maximized_horizontal = false
       c.floating = true
       c:geometry({
-        x      = c.screen.geometry['x'] + c.screen.geometry['width'] / 2,
-        y      = c.screen.geometry['y'],
-        width  = c.screen.geometry['width'] / 2,
-        --height = c.screen.geometry['height'] / 6 * 4,
+        x      = fs.geometry['x'] + fs.geometry['width'] / 2,
+        y      = fs.geometry['y'],
+        width  = fs.geometry['width'] / 2,
+        --height = fs.geometry['height'] / 6 * 4,
       })
       c.maximized_vertical = true
     end
@@ -96,6 +98,7 @@ end
 -- {{{ make focused client left Start
 myhok.cleft = function()
   c = client.focus
+  fs = awful.screen.focused()
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -103,10 +106,10 @@ myhok.cleft = function()
       c.maximized_horizontal = false
       c.floating = true
       c:geometry({
-        x      = c.screen.geometry['x'],
-        y      = c.screen.geometry['y'],
-        width  = c.screen.geometry['width'] / 2,
-        --height = c.screen.geometry['height'] / 6 * 4,
+        x      = fs.geometry['x'],
+        y      = fs.geometry['y'],
+        width  = fs.geometry['width'] / 2,
+        --height = fs.geometry['height'] / 6 * 4,
       })
       c.maximized_vertical = true
     end
@@ -117,6 +120,7 @@ end
 -- {{{ make focused client right-bottom Start
 myhok.ccorner = function()
   c = client.focus
+  fs = awful.screen.focused()
   if c then
     if not c.fullscreen then
       c.maximized = false
@@ -124,10 +128,10 @@ myhok.ccorner = function()
       c.maximized_horizontal = false
       c.floating = true
       c:geometry({
-        x      = c.screen.geometry['width'] / 2 - 200 + c.screen.geometry['x'],
-        y      = c.screen.geometry['height'] / 2 - 180 + c.screen.geometry['y'],
-        width  = c.screen.geometry['width'] / 2 + 80,
-        height = c.screen.geometry['height'] / 2 + 100
+        x      = fs.geometry['width'] / 2 - 200 + fs.geometry['x'],
+        y      = fs.geometry['height'] / 2 - 180 + fs.geometry['y'],
+        width  = fs.geometry['width'] / 2 + 80,
+        height = fs.geometry['height'] / 2 + 100
       })
     end
   end

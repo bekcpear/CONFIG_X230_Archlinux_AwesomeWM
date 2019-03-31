@@ -41,10 +41,11 @@ mywi.volicon:connect_signal("button::press", function()
   end
 end)
 
-local function myplacementforvolpopup(p, sg)
-  local sw = sg['bounding_rect'].width
-  local sx = sg['bounding_rect'].x
-  local sy = sg['bounding_rect'].y
+local function myplacementforvolpopup(p)
+  local fs = awful.screen.focused()
+  local sw = fs.geometry.width
+  local sx = fs.geometry.x
+  local sy = fs.geometry.y
   local pw = p:geometry().width
   local ph = p:geometry().height
   p:geometry({x=sx + sw - pw - 10, y=21, width=pw, height=ph})
