@@ -303,17 +303,48 @@ awful.screen.connect_for_each_screen(function(s)
           widget = wibox.container.background,
         },
         {
+--          {
+--            {
+--              {
+--                {
+--                  id     = 'index_role',
+--                  widget = wibox.widget.textbox,
+--                },
+--                margins = 4,
+--                widget  = wibox.container.margin,
+--              },
+--              bg     = '#333333',
+--              shape  = gears.shape.circle,
+--              widget = wibox.container.background,
+--            },
+--            top     = 3,
+--            bottom  = 3,
+--            visible = false,
+--            widget  = wibox.container.margin,
+--          },
+--          {
+--            {
+--              id     = 'icon_role',
+--              widget = wibox.widget.imagebox,
+--            },
+--            margins = 0,
+--            visible = false,
+--            widget  = wibox.container.margin,
+--          },
           {
-            id     = 'text_role',
-            widget = wibox.widget.textbox,
+            {
+              id     = 'text_role',
+              widget = wibox.widget.textbox,
+            },
+            left    = 7,
+            right   = 7,
+            top     = 2,
+            bottom  = 5,
+            widget  = wibox.container.margin,
           },
-          left    = 7,
-          right   = 7,
-          top     = 2,
-          bottom  = 5,
-          widget  = wibox.container.margin,
+          layout = wibox.layout.fixed.horizontal,
         },
-        forced_width = 34,
+        forced_width = 32,
         layout = wibox.layout.align.vertical,
       },
     }
@@ -526,8 +557,8 @@ globalkeys = gears.table.join(
     --                                            })
     --                                         end,
     --        {description = "open a testing terminal", group = "launcher"}),
-    --awful.key({ modkey, "Control" }, "r", awesome.restart,
-    --          {description = "reload awesome", group = "awesome"}),
+    awful.key({ modkey, "Control" }, "r", awesome.restart,
+              {description = "reload awesome", group = "awesome"}),
     --awful.key({ modkey, "Shift"   }, "q", awesome.quit,
     --          {description = "quit awesome", group = "awesome"}),
 
@@ -759,21 +790,11 @@ awful.rules.rules = {
       },
       properties = {
         floating = true,
+        --x = awful.screen.focused().geometry['x'] + awful.screen.focused().geometry['width'] / 2 - client.focus.width / 2,
+        --y = awful.screen.focused().geometry['y'] + awful.screen.focused().geometry['height'] / 2 - client.focus.height / 2
       },
       callback = function(c)
-        c:geometry({
-          x = awful.screen.focused().geometry['width'] / 2 - 500,
-          y = awful.screen.focused().geometry['height'] / 2 - 300,
-          width = 1000,
-          height = 600})
-      end
-    },
-    { rule = { class = "kmag" },
-      properties = {
-        floating = true,
-      },
-      callback = function(c)
-        c:geometry({x=0, y=20, width=800, height=600})
+        c:relative_move(awful.screen.focused().geometry['width'] / 2 - c.width / 2, awful.screen.focused().geometry['height'] / 2 - c.height / 2, 0, 0)
       end
     },
 
@@ -1018,8 +1039,8 @@ client.connect_signal("unfocus", function(c)
 end)
 
 -- Autorun programs
-autorun = true
---autorun = false
+--autorun = true
+autorun = false
 autorunApps =
 {
   --"LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/u/s/local/lib64/ /home/u/s/local/bin/nextcloud",

@@ -1,0 +1,1 @@
+KERNEL=="serio1", SUBSYSTEM=="serio", ATTR{firmware_id}=="PNP: LEN0020 PNP0f13", ATTR{resolution}="200", ATTR{speed}="230", ATTR{sensitivity}="230", ATTR{press_to_select}="0"

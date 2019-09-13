@@ -10,6 +10,7 @@ local naughty   = require("naughty")
 local beautiful = require("beautiful")
 local smoothwp  = require("themes.my.smoothwp")
 local mytl      = require("themes.my.tl")
+--local debug = require("gears.debug")
 local root      = root
 
 local mywi      = {}
@@ -257,9 +258,9 @@ end)
 --{{{  Net traffic widget start
 local netbar_up = wibox.widget {
   min_value         = 0,
+  max_value         = 0,
   step_width        = 0.5,
   step_spacing      = 0.3,
-  scale             = true,
   forced_width      = 80,
   color             = beautiful.graph_1,
   background_color  = beautiful.bg_normal,
@@ -268,9 +269,9 @@ local netbar_up = wibox.widget {
 }
 local netbar_do = wibox.widget {
   min_value         = 0,
+  max_value         = 0,
   step_width        = 0.5,
   step_spacing      = 0.3,
-  scale             = true,
   forced_width      = 80,
   color             = beautiful.graph_0,
   background_color  = beautiful.bg_normal,
@@ -417,6 +418,9 @@ local now_tx              = 0
 local now_rx              = 0
 local up                  = 0
 local dw                  = 0
+local value_up            = {}
+local value_dw            = {}
+local netindex            = 0
 local netwidgethover      = false
 local netwidgethoverinit0 = false
 local netwidgethoverinit1 = false
@@ -487,6 +491,47 @@ net_timer:connect_signal("timeout", function()
     if now_rx >= 0 and now_tx >= 0 and last_rx > 0 and last_tx > 0  then
       up            = (now_tx - last_tx) / 2048
       dw            = (now_rx - last_rx) / 2048
+      netindex      = netindex + 1
+      if #value_up == 0 then
+        table.insert(value_up, {up, netindex})
+      else
+        for i, v in pairs(value_up) do
+          if netindex - v[2] > 97 then
+            table.remove(value_up, i)
+          end
+        end
+        for i, v in pairs(value_up) do
+          if up >= v[1] and ((value_up[i-1] ~= nil and up <= value_up[i-1][1]) or value_up[i-1] == nil) then
+            table.insert(value_up, i, {up, netindex})
+            break
+          else
+            if value_up[i+1] == nil then
+              table.insert(value_up, i+1, {up, netindex})
+              break
+            end
+          end
+        end
+      end
+      if #value_dw == 0 then
+        table.insert(value_dw, {dw, netindex})
+      else
+        for i, v in pairs(value_dw) do
+          if netindex - v[2] > 97 then
+            table.remove(value_dw, i)
+          end
+        end
+        for i, v in pairs(value_dw) do
+          if dw >= v[1] and ((value_dw[i-1] ~= nil and dw <= value_dw[i-1][1]) or value_dw[i-1] == nil) then
+            table.insert(value_dw, i, {dw, netindex})
+            break
+          else
+            if value_dw[i+1] == nil then
+              table.insert(value_dw, {dw, netindex})
+              break
+            end
+          end
+        end
+      end
       if up >= 1000 or dw >= 1000 then
         nettxt_up.text = string.format("%.1f", up / 1024)
         nettxt_do.text = string.format("%.1f", dw / 1024)
@@ -496,6 +541,20 @@ net_timer:connect_signal("timeout", function()
         nettxt_do.text = string.format("%.1f", dw)
         nettxt_unit.text = 'kBps'
       end
+      netbar_up.max_value = value_up[1][1] >= value_dw[1][1] and value_up[1][1] or value_dw[1][1]
+      netbar_do.max_value = netbar_up.max_value
+      -- DEBUG START
+      --local deup = ""
+      --local dedw = ""
+      --for i, v in pairs(value_up) do
+      --  deup = deup .. "{".. v[1] .. ", " .. v[2] .. "} "
+      --end
+      --for i, v in pairs(value_dw) do
+      --  dedw = dedw .. "{".. v[1] .. ", " .. v[2] .. "} "
+      --end
+      --debug.print_warning("DEBUG_NET_UP: [" .. netindex .. "] " .. deup)
+      --debug.print_warning("DEBUG_NET_DW: [" .. netindex .. "] " .. dedw)
+      -- DEBUG END
       netbar_up:add_value(up)
       netbar_do:add_value(dw)
     end
